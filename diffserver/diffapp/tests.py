@@ -1,6 +1,6 @@
 # coding: utf-8
 from django.test import TestCase
-from diffapp.diffimport import make_commit_sequence
+from diffapp.diffimport import make_commit_sequence, make_diff
 from diffapp.models import CommitSequence, Commit, Diff
 
 EXAMPLE_GIT_SHOW_OUTPUT = u"""commit c28e535f1024e3b22ec05574aa2287aa5338e3dc
@@ -95,3 +95,53 @@ class DiffImportTest(TestCase):
         self.assertEquals(len(diffs), 2)
         self.assertEquals(diffs[0].filename, 'b/a.py')
         self.assertEquals(diffs[1].filename, 'a/b.py')
+
+
+class DiffParserTest(TestCase):
+    """ тест на превращение текста диффа в набор Diff.Line """
+    def test_it(self):
+        diff_lines = [
+            'diff --git a/a.py b/a.py',
+            'index d62e9f6..a788f61 100644',
+            '--- a/a.py',
+            '+++ b/a.py',
+            '@@ -1,2 +1,3 @@',
+            '-if x = y:',
+            '+import b',
+            '+if b.quaka(x - y):',
+            '     return z',
+            ' #blank 1',
+            ' #blank 2',
+            '@@ -10,12 +11,13 @@',
+            ' #blank 9',
+            ' def thing(x):',
+            '-print a',
+            '-print b',
+            '+    print a',
+            '+    print b',
+        ]
+
+        diff = make_diff(diff_lines)
+        lines = diff.lines
+
+        expected_line_types_and_numbers = [
+            ('old', 1, None),
+            ('new', None, 1),
+            ('new', None, 2),
+            ('same', 2, 3),
+            ('same', 3, 4),
+            ('same', 4, 5),
+            ('skip', None, None),
+            ('same', 10, 11),
+            ('same', 11, 12),
+            ('old', 12, None),
+            ('old', 13, None),
+            ('new', None, 13),
+            ('new', None, 14),
+        ]
+
+        actual_line_types_and_numbers = [
+            (l.type, l.old_li, l.new_li) for l in lines
+        ]
+
+        self.assertEquals(expected_line_types_and_numbers, actual_line_types_and_numbers)

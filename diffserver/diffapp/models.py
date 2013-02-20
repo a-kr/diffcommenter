@@ -1,7 +1,9 @@
 # coding: utf-8
+import re
+
 from django.db import models
 
-# Create your models here.
+
 class CommitSequence(models.Model):
     """ пачка коммитов, отдаваемая в ревью """
 
@@ -25,6 +27,57 @@ class Diff(models.Model):
     filename = models.TextField(u'Путь к файлу')
     head_lines = models.TextField(u'Строки метаданных диффа')  # объединенные через \n
     body_lines = models.TextField(u'Строки диффа в формате unified')  # объединенные через \n
+
+    class Line(object):
+        """ одна строчка диффа """
+        __slots__ = ['old_li', 'new_li', 'type', 'line']
+
+        def __init__(self, old_li, new_li, type, line):
+            self.old_li = old_li
+            self.new_li = new_li
+            self.type = type
+            self.line = line
+
+    @property
+    def lines(self):
+        """ получение списка объектов Diff.Line из содержимого body_lines """
+        if hasattr(self, '_cached_lines'):
+            return self._cached_lines
+
+        r1_li = 0
+        r2_li = 0
+        diff_t = []
+        i = 0
+
+        head = []
+        diff = self.body_lines.split('\n')
+
+        while i < len(diff):
+            type = diff[i][0]
+            diff[i] = diff[i].replace('\t', '    ').rstrip()
+            if type == '@':
+                m = re.match(r'^@@ -(\d+),\d+ \+(\d+),\d+ @@.*$', diff[i])
+                if m:
+                    r1_li = int(m.groups()[0])
+                    r2_li = int(m.groups()[1])
+                    if not (r1_li == 1 or r2_li == 1):
+                        diff_t.append((None, None, 'skip', ''))
+            elif type == ' ':
+                diff_t.append((r1_li, r2_li, 'same', diff[i][1:]))
+                r1_li = r1_li + 1
+                r2_li = r2_li + 1
+            elif type == '-':
+                diff_t.append((r1_li, None, 'old', diff[i][1:]))
+                r1_li = r1_li + 1
+            elif type == '+':
+                diff_t.append((None, r2_li, 'new', diff[i][1:]))
+                r2_li = r2_li + 1
+            i = i + 1
+
+        diff_t = [Diff.Line(*t) for t in diff_t]
+
+        self._cached_lines = diff_t
+        return diff_t
 
     class Meta:
         ordering = ['id']
