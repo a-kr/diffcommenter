@@ -60,7 +60,7 @@ def make_commit(lines, commit_sequence=None):
         head.append(lines[i].rstrip())
         i += 1
 
-    commit.head_lines = u'\n'.join(lines)
+    commit.head_lines = u'\n'.join(head)
     commit.sha1 = sha1
     commit.save()
 
@@ -94,6 +94,7 @@ def make_diff(lines, commit=None):
 
     i = 0
     while i < len(lines):
+        head.append(lines[i].rstrip())
         if lines[i].startswith('--- '):
             diff.filename = lines[i].split(' ', 1)[1]
         if lines[i].startswith('+++ '):
@@ -101,7 +102,6 @@ def make_diff(lines, commit=None):
             if filename != '/dev/null':
                 diff.filename = filename
             break
-        head.append(lines[i].rstrip())
         i += 1
     diff.head_lines = u'\n'.join(head)
     diff.body_lines = u'\n'.join(line.rstrip() for line in lines[i + 1:])

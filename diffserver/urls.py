@@ -7,6 +7,8 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'diffapp.views.index', name='home'),
+    url(r'^S(\d+)/$', 'diffapp.views.show_commit_sequence', name='commit_sequence'),
+
     # url(r'^diffserver/', include('diffserver.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:

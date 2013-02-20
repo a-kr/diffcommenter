@@ -13,9 +13,14 @@ class CommitSequence(models.Model):
 
 class Commit(models.Model):
     """ один коммит """
-    commit_sequence = models.ForeignKey(CommitSequence, verbose_name=u'Пачка коммитов', related_name='commits', null=True, blank=True)
+    commit_sequence = models.ForeignKey(CommitSequence, verbose_name=u'Пачка коммитов',
+        related_name='commits', null=True, blank=True, on_delete=models.CASCADE)
     sha1 = models.TextField(u'Хэш коммита')
     head_lines = models.TextField(u'Строки метаданных коммита')  # объединенные через \n
+
+    @property
+    def head(self):
+        return self.head_lines.split('\n')
 
     class Meta:
         ordering = ['id']
@@ -23,10 +28,15 @@ class Commit(models.Model):
 
 class Diff(models.Model):
     """ дифф одного файла в коммите """
-    commit = models.ForeignKey(Commit, verbose_name=u'Коммит', related_name='diffs', null=True, blank=True)
+    commit = models.ForeignKey(Commit, verbose_name=u'Коммит', related_name='diffs',
+        null=True, blank=True, on_delete=models.CASCADE)
     filename = models.TextField(u'Путь к файлу')
     head_lines = models.TextField(u'Строки метаданных диффа')  # объединенные через \n
     body_lines = models.TextField(u'Строки диффа в формате unified')  # объединенные через \n
+
+    @property
+    def head(self):
+        return self.head_lines.split('\n')
 
     class Line(object):
         """ одна строчка диффа """
@@ -53,8 +63,8 @@ class Diff(models.Model):
         diff = self.body_lines.split('\n')
 
         while i < len(diff):
+            diff[i] = diff[i].replace('\t', '    ').rstrip() or ' '
             type = diff[i][0]
-            diff[i] = diff[i].replace('\t', '    ').rstrip()
             if type == '@':
                 m = re.match(r'^@@ -(\d+),\d+ \+(\d+),\d+ @@.*$', diff[i])
                 if m:
@@ -85,7 +95,7 @@ class Diff(models.Model):
 
 class LineComment(models.Model):
     """ коммент к строке в диффе """
-    diff = models.ForeignKey(Diff, verbose_name=u'Дифф', related_name='comments')
+    diff = models.ForeignKey(Diff, verbose_name=u'Дифф', related_name='comments', on_delete=models.CASCADE)
     line_no = models.IntegerField(u'Индекс строки')
 
     class Meta:
