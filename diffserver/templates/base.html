@@ -6,9 +6,27 @@
 </head>
 <body>
     <script src="{{ STATIC_URL }}js/jquery.min.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.ba-viewportoffset.min.js"></script>
     <style>
         body {
             padding-top: 60px;
+            font-family: Consolas, Ubuntu Mono, monospace;
+        }
+
+        #top_fixed_bar {
+            position: fixed; top: 0px; left: 0px;
+            height: 20px; width: 100%;
+            background-color: black; color: white;
+        }
+        #subtop_fixed_bar {
+            position: fixed; top: 20px; left: 0px;
+            height: 20px; width: 100%;
+            background-color: #000088; color: white;
+        }
+        #subsubtop_fixed_bar {
+            position: fixed; top: 40px; left: 0px;
+            height: 20px; width: 100%;
+            background-color: #008800; color: white;
         }
     </style>
 

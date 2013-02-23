@@ -44,6 +44,43 @@
     .comment-body {
         padding: 3px;
     }
+
+    .fixed_bar_dull {
+        display: inline-block;
+        width: 8em;
+        color: #aaaaaa;
+        text-align: right;
+    }
 </style>
+<script type="text/javascript">
+$(function () {
+    var MINIMAL_PX_OFFSET_TO_CONSIDER_HEADER_CURRENT = 100;
+    /* фиксируем наверху названия текущих коммита и файла */
+    $(window).scroll(function () {
+        var current_h3 = "", current_h4 = "";
+        $('h3.commit').each(function() {
+            var offtop = $(this).viewportOffset().top;
+            if (offtop < MINIMAL_PX_OFFSET_TO_CONSIDER_HEADER_CURRENT) { current_h3 = $(this).text(); }
+        });
+        $('h4.diff').each(function() {
+            var offtop = $(this).viewportOffset().top;
+            if (offtop < MINIMAL_PX_OFFSET_TO_CONSIDER_HEADER_CURRENT) { current_h4 = $(this).text(); }
+        });
+        $('#current_h3_fixed').text(current_h3);
+        $('#current_h4_fixed').text(current_h4);
+    });
+});
+</script>
+
+<div id="top_fixed_bar"></div>
+<div id="subtop_fixed_bar">
+    <div class="fixed_bar_dull">Коммит:</div>
+    <span id="current_h3_fixed"></span>
+</div>
+<div id="subsubtop_fixed_bar">
+    <div class="fixed_bar_dull">Файл:</div>
+    <span id="current_h4_fixed"></span>
+</div>
+
 {{ commit_sequence_html|safe }}
 {% endblock %}
