@@ -44,7 +44,7 @@ def show_commit_sequence(request, object_id):
 
         python_kw_set = set(keyword.kwlist)
 
-        for line in self.lines:
+        for line_i, line in enumerate(self.lines):
             this_row_top_border = ''
 
             if streak:
@@ -60,20 +60,23 @@ def show_commit_sequence(request, object_id):
             for kword in python_kw_set:
                 fmt_line = re.sub(r'\b%s\b' % kword, '<b>%s</b>' % kword, fmt_line)
 
+            anchor = 'commit%s-file%s-line%s' % (commit_number, number_in_commit, hex(line_i))
+            anchor_insides = 'class="anchor-thingy jumps-to-anchor line-anchor" id="{anchor}" href="#{anchor}"'.format(**locals())
+
             if line.type == 'skip':
                 row = u'''<td class="lno" colspan="2" width="center">...</td>'''\
                       u'''<td class="line" style="{this_row_top_border}">&nbsp;'''.format(**locals())
             elif line.type == 'same':
-                row = u'''<td class="lno" >{line.old_li}</td>'''\
-                      u'''<td class="lno" >{line.new_li}</td>'''\
+                row = u'''<td class="lno" ><a {anchor_insides}>{line.old_li}</a></td>'''\
+                      u'''<td class="lno" ><a {anchor_insides}>{line.new_li}</a></td>'''\
                       u'''<td class="line" style="{this_row_top_border}"><pre>{fmt_line}</pre>'''.format(**locals())
             elif line.type == 'old':
-                row = u'''<td class="lno" >{line.old_li}</td>'''\
+                row = u'''<td class="lno" ><a {anchor_insides}>{line.old_li}</a></td>'''\
                       u'''<td class="lno" >&nbsp;</td>'''\
                       u'''<td class="line" style="background-color: #FFDDDD; {this_row_top_border}"><pre>{fmt_line}</pre>'''.format(**locals())
             elif line.type == 'new':
                 row = u'''<td class="lno" >&nbsp;</td>'''\
-                      u'''<td class="lno" >{line.new_li}</td>'''\
+                      u'''<td class="lno" ><a {anchor_insides}>{line.new_li}</a></td>'''\
                       u'''<td class="line" style="background-color: #DDFFDD; {this_row_top_border}"><pre>{fmt_line}</pre>'''.format(**locals())
             print >>outfile, '<tr>'
             print >>outfile, row
