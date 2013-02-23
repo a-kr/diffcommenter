@@ -82,19 +82,19 @@ class DiffImportTest(TestCase):
         self.assertEquals(commits[0].sha1, 'f60d7b4858faa696c0581f47ccc81736f9df3ded')
         diffs = commits[0].diffs.all()[:]
         self.assertEquals(len(diffs), 1)
-        self.assertEquals(diffs[0].filename, 'b/a.py')
+        self.assertEquals(diffs[0].filename, 'a.py')
 
         self.assertEquals(commits[1].sha1, '242ce960af361fd307ca2fe61bc0a71c29c28394')
         diffs = commits[1].diffs.all()[:]
         self.assertEquals(len(diffs), 2)
-        self.assertEquals(diffs[0].filename, 'b/a.py')
-        self.assertEquals(diffs[1].filename, 'b/b.py')
+        self.assertEquals(diffs[0].filename, 'a.py')
+        self.assertEquals(diffs[1].filename, 'b.py')
 
         self.assertEquals(commits[2].sha1, 'c28e535f1024e3b22ec05574aa2287aa5338e3dc')
         diffs = commits[2].diffs.all()[:]
         self.assertEquals(len(diffs), 2)
-        self.assertEquals(diffs[0].filename, 'b/a.py')
-        self.assertEquals(diffs[1].filename, 'a/b.py')
+        self.assertEquals(diffs[0].filename, 'a.py')
+        self.assertEquals(diffs[1].filename, 'b.py')
 
 
 class DiffParserTest(TestCase):

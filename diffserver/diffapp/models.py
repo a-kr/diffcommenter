@@ -26,6 +26,16 @@ class Commit(models.Model):
     def head(self):
         return self.head_lines.split('\n')
 
+    @property
+    def oneline_summary(self):
+        comment_lines = [l.strip() for l in self.head if l.startswith('    ')]
+        if comment_lines:
+            first_line = comment_lines[0]
+        else:
+            first_line = '(no comment)'
+        return u'%s %s' % (self.sha1[:7], first_line)
+
+
     class Meta:
         ordering = ['id']
 

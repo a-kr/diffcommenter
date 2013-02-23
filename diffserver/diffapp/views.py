@@ -23,6 +23,7 @@ def show_commit_sequence(request, object_id):
     commit_sequence = get_object_or_404(CommitSequence, pk=object_id)
 
     def diff_to_html(self):
+        print >>outfile, '<h4 class="diff">', self.filename, '</h4>'
         print >>outfile, '<pre>' + '\n'.join(self.head) + '</pre>'
         print >>outfile, '''<table width="100%" cellspacing="0" class="difftable">
         <tr>
@@ -86,8 +87,8 @@ def show_commit_sequence(request, object_id):
 
     def commit_to_html(self):
         print >>outfile, '<hr>'
-        print >>outfile, '<h3>', self.head[0], '</h3>'
-        print >>outfile, '<pre>' + '\n'.join(self.head[1:]).replace('<', '&lt;') + '</pre>'
+        print >>outfile, '<h3 class="commit">', self.oneline_summary, '</h3>'
+        print >>outfile, '<pre>' + '\n'.join(self.head).replace('<', '&lt;') + '</pre>'
 
         for diff in self.diffs.all():
             diff_to_html(diff)

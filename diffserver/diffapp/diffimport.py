@@ -92,13 +92,18 @@ def make_diff(lines, commit=None):
 
     head = []
 
+    def strip_phony_filename_prefixes(filename):
+        if filename.startswith('a/') or filename.startswith('b/'):
+            return filename[len('a/'):]
+        return filename
+
     i = 0
     while i < len(lines):
         head.append(lines[i].rstrip())
         if lines[i].startswith('--- '):
-            diff.filename = lines[i].split(' ', 1)[1]
+            diff.filename = strip_phony_filename_prefixes(lines[i].split(' ', 1)[1])
         if lines[i].startswith('+++ '):
-            filename = lines[i].split(' ', 1)[1]
+            filename = strip_phony_filename_prefixes(lines[i].split(' ', 1)[1])
             if filename != '/dev/null':
                 diff.filename = filename
             break
