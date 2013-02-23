@@ -51,35 +51,85 @@
         color: #aaaaaa;
         text-align: right;
     }
+
+    a.commit-anchor {
+        color: #444488;
+    }
+    a.commit-anchor:hover {
+        color: #000088;
+    }
+
+    a.diff-anchor {
+        color: #448844;
+    }
+    a.diff-anchor:hover {
+        color: #008800;
+    }
+
+    a.fixed_link {
+        color: white;
+        text-decoration: none;
+    }
+    a.fixed_link:hover {
+        color: white;
+        text-decoration: underline;
+    }
 </style>
 <script type="text/javascript">
+function go_to_anchor_centered(e) {
+    var link = $(e.currentTarget),
+        anchor_el = $(link.attr('href'));
+    e.preventDefault();
+
+    location.href = link.attr('href');
+
+    var windowHeight = $(window).height();
+    var elementHeight = anchor_el.height();
+
+    var elementPosition = anchor_el.position();
+    var elementTop = elementPosition.top;
+
+    var toScroll = (windowHeight / 2) - (elementHeight / 2);
+
+    window.scroll(0,(elementTop - toScroll));
+}
+
 $(function () {
-    var MINIMAL_PX_OFFSET_TO_CONSIDER_HEADER_CURRENT = 100;
+    var MINIMAL_PX_OFFSET_TO_CONSIDER_HEADER_CURRENT = $(window).height() / 2;
     /* фиксируем наверху названия текущих коммита и файла */
     $(window).scroll(function () {
-        var current_h3 = "", current_h4 = "";
+        var current_h3 = null, current_h4 = null;
         $('h3.commit').each(function() {
             var offtop = $(this).viewportOffset().top;
-            if (offtop < MINIMAL_PX_OFFSET_TO_CONSIDER_HEADER_CURRENT) { current_h3 = $(this).text(); }
+            if (offtop < MINIMAL_PX_OFFSET_TO_CONSIDER_HEADER_CURRENT) { current_h3 = this; }
         });
         $('h4.diff').each(function() {
             var offtop = $(this).viewportOffset().top;
-            if (offtop < MINIMAL_PX_OFFSET_TO_CONSIDER_HEADER_CURRENT) { current_h4 = $(this).text(); }
+            if (offtop < MINIMAL_PX_OFFSET_TO_CONSIDER_HEADER_CURRENT) { current_h4 = this; }
         });
-        $('#current_h3_fixed').text(current_h3);
-        $('#current_h4_fixed').text(current_h4);
+
+        var set_fixed_link = function (link_to_set, destination_h) {
+            if (!destination_h) return;
+            $(link_to_set).text($('span', destination_h).text());
+            $(link_to_set).attr('href', $('a', destination_h).attr('href'));
+        };
+
+        set_fixed_link('#current_h3_fixed', current_h3);
+        set_fixed_link('#current_h4_fixed', current_h4);
     });
+
+    $('.jumps-to-anchor').click(go_to_anchor_centered);
 });
 </script>
 
 <div id="top_fixed_bar"></div>
 <div id="subtop_fixed_bar">
     <div class="fixed_bar_dull">Коммит:</div>
-    <span id="current_h3_fixed"></span>
+    <a id="current_h3_fixed" class="fixed_link jumps-to-anchor"></a>
 </div>
 <div id="subsubtop_fixed_bar">
     <div class="fixed_bar_dull">Файл:</div>
-    <span id="current_h4_fixed"></span>
+    <a id="current_h4_fixed" class="fixed_link jumps-to-anchor"></a>
 </div>
 
 {{ commit_sequence_html|safe }}
