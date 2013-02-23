@@ -83,28 +83,53 @@
         color: white;
         text-decoration: underline;
     }
+
+    #horizontal_highlighter {
+        position: absolute;
+        height: 20px;
+        width: 100%;
+        display: none;
+        background-color: yellow;
+        pointer-events: none;
+        left: 0px;
+        opacity: 0.5;
+    }
 </style>
 <script type="text/javascript">
-function go_to_anchor_centered(e) {
-    var link = $(e.currentTarget),
-        anchor_el = $(link.attr('href'));
-    e.preventDefault();
-
-    location.href = link.attr('href');
-
+function scroll_to_center_element_in_window(el) {
     var windowHeight = $(window).height();
-    var elementHeight = anchor_el.height();
+    var elementHeight = el.height();
 
-    var elementPosition = anchor_el.position();
+    var elementPosition = el.position();
     var elementTop = elementPosition.top;
 
     var toScroll = (windowHeight / 2) - (elementHeight / 2);
 
     window.scroll(0,(elementTop - toScroll));
+    $('#horizontal_highlighter').css({'top': Math.round(elementTop - 1)}).show();
+}
+
+function on_click_go_to_anchor_centered(e) {
+    var link = $(e.currentTarget),
+        anchor_el = $(link.attr('href'));
+    if (e.button != 0) return;
+    e.preventDefault();
+
+    location.href = link.attr('href');
+    scroll_to_center_element_in_window(anchor_el);
 }
 
 $(function () {
     var MINIMAL_PX_OFFSET_TO_CONSIDER_HEADER_CURRENT = $(window).height() / 2;
+    if (window.location.hash) {
+        var anchor = $(window.location.hash);
+        if (anchor) {
+            setTimeout(function () {
+                scroll_to_center_element_in_window(anchor);
+            }, 0);
+        }
+    }
+
     /* фиксируем наверху названия текущих коммита и файла */
     $(window).scroll(function () {
         var current_h3 = null, current_h4 = null;
@@ -127,7 +152,7 @@ $(function () {
         set_fixed_link('#current_h4_fixed', current_h4);
     });
 
-    $('.jumps-to-anchor').click(go_to_anchor_centered);
+    $('.jumps-to-anchor').click(on_click_go_to_anchor_centered);
 });
 </script>
 
@@ -140,6 +165,8 @@ $(function () {
     <div class="fixed_bar_dull">Файл:</div>
     <a id="current_h4_fixed" class="fixed_link jumps-to-anchor"></a>
 </div>
+
+<div id="horizontal_highlighter"></div>
 
 {{ commit_sequence_html|safe }}
 {% endblock %}
