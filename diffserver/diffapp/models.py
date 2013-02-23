@@ -7,6 +7,10 @@ from django.db import models
 class CommitSequence(models.Model):
     """ пачка коммитов, отдаваемая в ревью """
 
+    @models.permalink
+    def get_edit_url(self):
+        return ("commit_sequence", [self.pk])
+
     class Meta:
         ordering = ['id']
 

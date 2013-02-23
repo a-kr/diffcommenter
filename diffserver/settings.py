@@ -14,6 +14,8 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
+ROOT_URL = 'http://a-kr.at.netstream.ru'
+
 MANAGERS = ADMINS
 
 DATABASES = {
