@@ -16,7 +16,8 @@
     $(function() {
         init_diffpage({
             'new_comment_url': "{% url ajax_new_comment commit_sequence.pk %}",
-            'save_comment_url': "{% url ajax_save_comment commit_sequence.pk %}"
+            'save_comment_url': "{% url ajax_save_comment commit_sequence.pk %}",
+            'del_comment_url': "{% url ajax_del_comment commit_sequence.pk %}"
         });
     });
 </script>

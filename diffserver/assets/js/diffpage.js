@@ -2,6 +2,7 @@ function init_diffpage(opts) {
     opts.__proto__ = {
         'new_comment_url': '',
         'save_comment_url': '',
+        'del_comment_url': '',
         'save_delay_ms': 1000
     };
 
@@ -212,7 +213,7 @@ function init_diffpage(opts) {
             comment_text = $('textarea', comment).val(),
             status_span = $('.save-status', comment);
         comment.data('save-timeout', null);
-        status_span.text('Saving...');
+        status_span.text('♨');
 
         $.ajax({
             'url': opts['save_comment_url'],
@@ -248,5 +249,43 @@ function init_diffpage(opts) {
             save_comment(comment);
         }, opts['save_delay_ms']);
         comment.data('save-timeout', timeout_id);
+    });
+
+    /* удаление коммента */
+    $('.comment .del-comment a').live('click', function(ev) {
+        var self = $(this),
+            comment = self.closest('.comment'),
+            comment_id = comment.data('pk'),
+            status_span = $('.save-status', comment);
+        status_span.text('Deleting...');
+        ev.preventDefault();
+        $.ajax({
+            'url': opts['del_comment_url'],
+            'type': 'POST',
+            'data': {
+                'comment_id': comment_id,
+                'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']", comment).val()
+            },
+            'complete': function (response, statusCode) {
+                if (statusCode == 'error') {
+                    status_span.text('Delete error');
+                } else {
+                    comment.fadeOut(function () { comment.remove(); });
+                }
+            }
+        });
+        return false;
+    });
+
+    /* ответ на коммент (просто добавить новый коммент, ссылающийся на те же строки */
+    $('.comment .reply-to-comment a').live('click', function(ev) {
+        var self = $(this),
+            comment = self.closest('.comment'),
+            first_row = $("#" + comment.data('from')),
+            last_row = $("#" + comment.data('to'));
+        ev.preventDefault();
+        display_row_reticle(first_row, last_row);
+        create_new_comment();
+        return false;
     });
 }

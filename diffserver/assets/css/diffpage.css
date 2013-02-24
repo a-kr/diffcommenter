@@ -77,8 +77,22 @@
 }
 
 .save-status {
-    width: 10em;
+    display: inline-block;
+    width: 2em;
     color: #ff8800;
+}
+.del-comment {
+    display: inline-block;
+    width: 8em;
+}
+.reply-to-comment {
+    display: inline-block;
+    width: 8em;
+}
+.user-name {
+    display: inline-block;
+    width: 10em;
+    text-decoration: italic;
 }
 
 a.commit-anchor {

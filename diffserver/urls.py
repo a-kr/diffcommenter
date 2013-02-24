@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     url(r'^S(\d+)/$', 'diffapp.views.show_commit_sequence', name='commit_sequence'),
     url(r'^S(\d+)/new_comment$', 'diffapp.views.ajax_new_comment', name='ajax_new_comment'),
     url(r'^S(\d+)/save_comment$', 'diffapp.views.ajax_save_comment', name='ajax_save_comment'),
+    url(r'^S(\d+)/del_comment$', 'diffapp.views.ajax_del_comment', name='ajax_del_comment'),
 
     # Аутентификация
     url(r'^login/$', login, name='login'),

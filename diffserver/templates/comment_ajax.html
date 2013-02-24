@@ -1,8 +1,17 @@
 <div class="comment" data-pk="{{ comment.pk }}" data-from="{{ comment.first_line_anchor }}" data-to="{{ comment.last_line_anchor }}">
     <div class="comment-title">
-        {{ comment.added }}
-        <i>{{ comment.user }}</i>
+        <span class="comment-date">{{ comment.added }}</span>
+        <span class="user-name">{{ comment.user }}</span>
         <span class='save-status'></span>
+        {% if comment.user == user %}
+        <span class='del-comment'>
+            <a href="#">delete</a>
+        </span>
+        {% else %}
+        <span class='reply-to-comment'>
+            <a href="#">reply</a>
+        </span>
+        {% endif %}
     </div>
     <div class="comment-body">
     {% csrf_token %}

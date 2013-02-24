@@ -181,12 +181,35 @@ def ajax_save_comment(request, commit_sequence_id):
         diff__commit__commit_sequence__pk=commit_sequence_id
     )
 
-
-    print comment.user.pk, request.user.pk
     if comment.user.pk != request.user.pk:
         return HttpResponse(u'Only author can change his comments', status=403)
 
     comment.text = request.POST['text']
     comment.save()
+
+    return HttpResponse('OK')
+
+
+def ajax_del_comment(request, commit_sequence_id):
+    """ AJAX-вьюха для удаления коммента.
+
+        :param commit_sequence_id: id пачки коммитов
+        :param request.POST['comment_id']: id коммента
+    """
+    if not request.POST.get('comment_id'):
+        return HttpResponse(status=400)
+
+    if not request.user.is_authenticated():
+        return HttpResponse(u'You must be logged in to delete comments', status=403)
+
+    comment = get_object_or_404(LineComment,
+        pk=request.POST.get('comment_id'),
+        diff__commit__commit_sequence__pk=commit_sequence_id
+    )
+
+    if comment.user.pk != request.user.pk:
+        return HttpResponse(u'Only author can delete his comments', status=403)
+
+    comment.delete()
 
     return HttpResponse('OK')
