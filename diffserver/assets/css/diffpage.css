@@ -82,6 +82,7 @@ a.fixed_link:hover {
 }
 
 #horizontal_highlighter {
+    z-index: 50;
     position: absolute;
     height: 20px;
     width: 100%;
