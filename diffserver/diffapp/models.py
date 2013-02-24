@@ -7,9 +7,16 @@ from django.db import models
 class CommitSequence(models.Model):
     """ пачка коммитов, отдаваемая в ревью """
 
+    title = models.TextField(u'Заголовок', default=u'Безымянная пачка коммитов')
+    added = models.DateTimeField(u'Дата добавления', auto_now_add=True)
+    user = models.ForeignKey('auth.User', null=True, blank=True, verbose_name=u'Автор', related_name='commit_sequences')
+
     @models.permalink
     def get_edit_url(self):
         return ("commit_sequence", [self.pk])
+
+    def __unicode__(self):
+        return self.title
 
     class Meta:
         ordering = ['id']
@@ -68,13 +75,17 @@ class Diff(models.Model):
         if hasattr(self, '_cached_lines'):
             return self._cached_lines
 
-        r1_li = 0
-        r2_li = 0
+        # наша основная задача здесь --- проставить всем строчкам номера
+        # по старой и по новой версии файла.
+
+        r1_li = 0  # номер строки в старой версии файла
+        r2_li = 0  # номер в новой версии
         diff_t = []
         i = 0
 
         head = []
         diff = self.body_lines.split('\n')
+
 
         while i < len(diff):
             diff[i] = diff[i].replace('\t', '    ').rstrip() or ' '
@@ -110,7 +121,12 @@ class Diff(models.Model):
 class LineComment(models.Model):
     """ коммент к строке в диффе """
     diff = models.ForeignKey(Diff, verbose_name=u'Дифф', related_name='comments', on_delete=models.CASCADE)
-    line_no = models.IntegerField(u'Индекс строки')
+    added = models.DateTimeField(u'Дата добавления', auto_now_add=True)
+    text = models.TextField(u'Текст коммента')
+    user = models.ForeignKey('auth.User', verbose_name=u'Кто добавил', related_name='comments')
+
+    first_line_no = models.IntegerField(u'Начало комментируемого диапазона')  # по факту это индекс в comment.lines
+    last_line_no = models.IntegerField(u'Конец комментируемого диапазона'),  # коммент визуально разместится под этой строкой
 
     class Meta:
         ordering = ['id']

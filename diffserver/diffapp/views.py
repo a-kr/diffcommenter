@@ -108,5 +108,6 @@ def show_commit_sequence(request, object_id):
     sequence_to_html(commit_sequence)
     c = {
         'commit_sequence_html': outfile.getvalue(),
+        'commit_sequence': commit_sequence,
     }
     return render(request, "commit_sequence.html", c)

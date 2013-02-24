@@ -2,6 +2,14 @@
 {% block head_extra %}
     <link href="{{ STATIC_URL }}css/diffpage.css" rel="stylesheet" media="screen">
 {% endblock %}
+
+{% block page_title %}
+    [{{ commit_sequence.pk }}] {{ commit_sequence }}{% if commit_sequence.user %}({{ commit_sequence.user }}){% endif %}
+{% endblock %}
+{% block top_bar_title %}
+    {{ commit_sequence }}{% if commit_sequence.user %}({{ commit_sequence.user }}){% endif %}
+{% endblock %}
+
 {% block entire_body %}
 <script src="{{ STATIC_URL }}js/diffpage.js"></script>
 <script type="text/javascript">
