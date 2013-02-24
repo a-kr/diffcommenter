@@ -288,4 +288,11 @@ function init_diffpage(opts) {
         create_new_comment();
         return false;
     });
+
+    /* увеличиваем все поля для ввода комментов по содержимому */
+    $('textarea').each(function (i, el) {
+        $(el).css({
+            'height': el.scrollHeight + ROW_HEIGHT
+        });
+    });
 }

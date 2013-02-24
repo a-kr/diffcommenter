@@ -33,19 +33,21 @@
     margin: 3px;
     margin-left: 30px;
     border: solid 1px #888800;
-    background-color: #ffff88;
+    background-color: #ffffbb;
 }
 .comment-title {
     border-bottom: gray;
-    background-color: #ffffbb;
 }
 .comment-body {
     padding: 3px;
+    margin-left: 1em;
+    background-color: #ffffff;
 }
 .comment-body textarea {
     width: 90%;
     min-height: 2em;
     background: transparent;
+    border: solid 1px black;
 }
 
 .ajax_comment_container {
@@ -93,6 +95,13 @@
     display: inline-block;
     width: 10em;
     text-decoration: italic;
+}
+
+.my-own-comment .user-name {
+    font-weight: bold;
+}
+.my-own-comment {
+    background-color: #E9FF89 !important;
 }
 
 a.commit-anchor {
