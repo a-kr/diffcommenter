@@ -178,6 +178,13 @@ td.lno {
 .toc_comment_my_own {
     font-weight: bold;
 }
-.toc_comment_link {
+.toc_link {
     color: #888888;
+    text-decoration: none;
+    border-bottom: dashed 1px #888888;
+}
+.toc_link:hover {
+    color: #888888;
+    text-decoration: none;
+    border-bottom: solid 1px #888888;
 }

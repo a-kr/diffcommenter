@@ -39,7 +39,7 @@
 <ol>
     {% for comment in comments %}
     <li>
-        <a href="#{{ comment.make_anchor }}" class="jumps-to-anchor toc_comment_link">{{ comment.added }}</a>
+        <a href="#{{ comment.make_anchor }}" class="jumps-to-anchor toc_link">{{ comment.added }}</a>
         <span class="toc_comment_user {% if user == comment.user %}toc_comment_my_own{% endif %}">
             {{ comment.user }}:
         </span>
@@ -49,7 +49,19 @@
 </ol>
 {% endif %}
 
+{% if commit_sequence.commits.all %}
 <h2>Commits</h2>
+<ol>
+    {% for commit in commit_sequence.commits.all %}
+    <li>
+        <a href="#{{ commit.make_anchor }}" class="jumps-to-anchor toc_link">{{ commit.short_hash }}</a>
+        {{ commit.first_line }}
+    </li>
+    {% endfor %}
+</ol>
+{% endif %}
+
+<hr/>
 
 {{ commit_sequence_html|safe }}
 

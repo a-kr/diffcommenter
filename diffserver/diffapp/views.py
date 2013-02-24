@@ -24,7 +24,12 @@ def show_commit_sequence(request, object_id):
 
     from StringIO import StringIO
     outfile = StringIO()
-    commit_sequence = get_object_or_404(CommitSequence, pk=object_id)
+    try:
+        commit_sequence = CommitSequence.objects.filter(pk=object_id)\
+                .prefetch_related('commits', 'commits__diffs', 'commits__diffs__comments')\
+                [:1][0]
+    except IndexError:
+        return HttpResponse(code=404)
 
     def diff_to_html(self, commit_number, number_in_commit):
         print >>outfile, '<h4 class="diff"><span>', self.filename, '</span>'
@@ -103,19 +108,19 @@ def show_commit_sequence(request, object_id):
         print >>outfile, '</table>'
     # end of diff_to_html
 
-    def commit_to_html(self, commit_number):
+    def commit_to_html(self):
         print >>outfile, '<hr>'
         print >>outfile, '<h3 class="commit"><span>', self.oneline_summary, '</span>'
-        anchor = "commit%s" % commit_number
+        anchor = self.make_anchor()
         print >>outfile, u'<a class="anchor-thingy jumps-to-anchor commit-anchor" id="{anchor}" href="#{anchor}">¶</a>'.format(**locals()), '</h3>'
         print >>outfile, '<pre>' + '\n'.join(self.head).replace('<', '&lt;') + '</pre>'
 
         for i, diff in enumerate(self.diffs.all()):
-            diff_to_html(diff, commit_number, i)
+            diff_to_html(diff, self.pk, i)
 
     def sequence_to_html(self):
-        for i, commit in enumerate(self.commits.all()):
-            commit_to_html(commit, i)
+        for commit in self.commits.all():
+            commit_to_html(commit)
     # end of sequence_to_html
 
     sequence_to_html(commit_sequence)

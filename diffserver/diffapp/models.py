@@ -33,15 +33,25 @@ class Commit(models.Model):
     def head(self):
         return self.head_lines.split('\n')
 
+    def make_anchor(self):
+        return "commit%s" % self.pk
+
     @property
-    def oneline_summary(self):
+    def short_hash(self):
+        return self.sha1[:7]
+
+    @property
+    def first_line(self):
         comment_lines = [l.strip() for l in self.head if l.startswith('    ')]
         if comment_lines:
             first_line = comment_lines[0]
         else:
             first_line = '(no comment)'
-        return u'%s %s' % (self.sha1[:7], first_line)
+        return first_line
 
+    @property
+    def oneline_summary(self):
+        return u'%s %s' % (self.short_hash, self.first_line)
 
     class Meta:
         ordering = ['id']
