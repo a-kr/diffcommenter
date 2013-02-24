@@ -15,6 +15,13 @@
     <a href="/">Diffcommenter</a>
     |
     <span class="top_bar_title">{% block top_bar_title %}Главная{% endblock %}</span>
+    <div class="top_bar_user_info">
+        {% if user.is_authenticated %}
+        ☑ <i>{{ user }}</i> (<a href="{% url logout %}">logout</a>)
+        {% else %}
+        ☒ <a href="{% url login %}?next={{ request.get_full_path }}">login</a>
+        {% endif %}
+    </div>
 </div>
 
 {% block entire_body %}

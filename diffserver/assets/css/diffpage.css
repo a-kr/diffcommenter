@@ -29,6 +29,7 @@
 }
 
 .comment {
+    z-index: 25;
     margin: 3px;
     margin-left: 30px;
     border: solid 1px #888800;
@@ -41,12 +42,43 @@
 .comment-body {
     padding: 3px;
 }
+.comment-body textarea {
+    width: 90%;
+    min-height: 2em;
+    background: transparent;
+}
+
+.ajax_comment_container {
+}
+
+.ajax_comment_container_error {
+    background-color: #ffaaaa;
+    border: solid 1px red;
+    margin-left: 30px;
+    border-radius: 5px;
+    padding: 4px;
+    color: #880000;
+}
+
+.ajax_comment_container_loading {
+    background-color: #ffffaa;
+    border: solid 1px yellow;
+    margin-left: 30px;
+    border-radius: 5px;
+    padding: 4px;
+    color: #888800;
+}
 
 .fixed_bar_dull {
     display: inline-block;
     width: 8em;
     color: #aaaaaa;
     text-align: right;
+}
+
+.save-status {
+    width: 10em;
+    color: #ff8800;
 }
 
 a.commit-anchor {
@@ -98,7 +130,7 @@ td.lno {
 }
 
 #rowspan_reticle {
-    z-index: 40;
+    z-index: 20;
     position: absolute;
     display: none;
     pointer-events: none;

@@ -27,6 +27,13 @@ body {
     margin-left: 4em;
     margin-right: 4em;
 }
+.top_bar_user_info {
+    display: inline-block;
+    float: right;
+    color: lime;
+    margin-left: 4em;
+    margin-right: 4em;
+}
 #top_fixed_bar a {
     color: #aaaaaa;
 }

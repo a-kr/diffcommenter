@@ -14,16 +14,19 @@
 <script src="{{ STATIC_URL }}js/diffpage.js"></script>
 <script type="text/javascript">
     $(function() {
-        init_diffpage();
+        init_diffpage({
+            'new_comment_url': "{% url ajax_new_comment commit_sequence.pk %}",
+            'save_comment_url': "{% url ajax_save_comment commit_sequence.pk %}"
+        });
     });
 </script>
 
 <div id="subtop_fixed_bar">
-    <div class="fixed_bar_dull">Коммит:</div>
+    <div class="fixed_bar_dull">Commit:</div>
     <a id="current_h3_fixed" class="fixed_link jumps-to-anchor"></a>
 </div>
 <div id="subsubtop_fixed_bar">
-    <div class="fixed_bar_dull">Файл:</div>
+    <div class="fixed_bar_dull">File:</div>
     <a id="current_h4_fixed" class="fixed_link jumps-to-anchor"></a>
 </div>
 

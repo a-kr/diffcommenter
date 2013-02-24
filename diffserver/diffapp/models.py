@@ -122,11 +122,11 @@ class LineComment(models.Model):
     """ коммент к строке в диффе """
     diff = models.ForeignKey(Diff, verbose_name=u'Дифф', related_name='comments', on_delete=models.CASCADE)
     added = models.DateTimeField(u'Дата добавления', auto_now_add=True)
-    text = models.TextField(u'Текст коммента')
+    text = models.TextField(u'Текст коммента', blank=True)
     user = models.ForeignKey('auth.User', verbose_name=u'Кто добавил', related_name='comments')
 
-    first_line_no = models.IntegerField(u'Начало комментируемого диапазона')  # по факту это индекс в comment.lines
-    last_line_no = models.IntegerField(u'Конец комментируемого диапазона'),  # коммент визуально разместится под этой строкой
+    first_line_anchor = models.TextField(u'Начало комментируемого диапазона')  # по факту это индекс в comment.lines
+    last_line_anchor = models.TextField(u'Конец комментируемого диапазона')  # коммент визуально разместится под этой строкой
 
     class Meta:
         ordering = ['id']

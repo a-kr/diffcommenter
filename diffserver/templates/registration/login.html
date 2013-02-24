@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block entire_body %}
+<h1>Login</h1>
+<form id="user_login_form" action="{% url login %}" method="POST">{% csrf_token %}
+    <table>
+        {{ form.as_table }}
+    </table>
+    {% if request.GET.next %}
+        <input type="hidden" name="next" value="{{ request.GET.next }}" />
+    {% else %}
+        <input type="hidden" name="next" value="/" />
+    {% endif %}
+    <input type="submit" value="Login" />
+</form>
+{% endblock %}

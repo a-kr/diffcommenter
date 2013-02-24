@@ -1,5 +1,12 @@
-function init_diffpage() {
+function init_diffpage(opts) {
+    opts.__proto__ = {
+        'new_comment_url': '',
+        'save_comment_url': '',
+        'save_delay_ms': 1000
+    };
+
     var MINIMAL_PX_OFFSET_TO_CONSIDER_HEADER_CURRENT = $(window).height() / 2;
+    var ROW_HEIGHT = 16;
 
     function scroll_to_center_element_in_window(el) {
         var windowHeight = $(window).height();
@@ -57,6 +64,9 @@ function init_diffpage() {
 
     $('.jumps-to-anchor').click(on_click_go_to_anchor_centered);
 
+    /** выделение строк, создание комментариев **/
+
+    /* информация о текущем выделении */
     var row_selection_context = {
         'mouse_down': false,
         'start_row': null,
@@ -65,8 +75,11 @@ function init_diffpage() {
         'bottom_row': null
     };
 
+    /* изменение выделения */
     $('td.lno').bind('mousedown', function (ev) {
         var tr = $(ev.currentTarget).closest('tr');
+        if (ev.button != 0) return;
+        if (ev.target.tagName == 'A') return;
         ev.preventDefault();
         row_selection_context['mouse_down'] = true;
         row_selection_context['start_row'] = tr;
@@ -77,6 +90,7 @@ function init_diffpage() {
         ev.preventDefault();
         row_selection_context['mouse_down'] = false;
         update_rowspan_reticle();
+        create_new_comment();
     });
     $('td.lno').bind('mousemove', function (ev) {
         if (!row_selection_context['mouse_down']) return;
@@ -86,6 +100,7 @@ function init_diffpage() {
         update_rowspan_reticle();
     });
 
+    /* определение, какая из выделенных строк наверху, а какая внизу */
     function get_top_and_bottom_row() {
         if (!row_selection_context['start_row'] || !row_selection_context['end_row']) {
             return null;
@@ -103,6 +118,7 @@ function init_diffpage() {
         }
     }
 
+    /* изменение положения выделялки на экране */
     function update_rowspan_reticle() {
         var reticle = $('#rowspan_reticle'),
            rows = get_top_and_bottom_row();
@@ -112,7 +128,7 @@ function init_diffpage() {
             return;
         }
         var top_of_span = rows['top'].position().top,
-            height_of_span = rows['bottom'].position().top + rows['bottom'].height() - top_of_span,
+            height_of_span = rows['bottom'].position().top + ROW_HEIGHT - top_of_span,
             some_td = $('td.line', rows['top']),
             left_of_span = some_td.position().left,
             width_of_span = some_td.width();
@@ -125,4 +141,112 @@ function init_diffpage() {
 
         reticle.show();
     }
+
+    /* "ручной" способ заставить вылезти выделялку */
+    function display_row_reticle(first_row, last_row) {
+        row_selection_context['start_row'] = first_row;
+        row_selection_context['end_row'] = last_row;
+        update_rowspan_reticle();
+    }
+
+    /* "ручной" способ заставить спрятаться выделялку */
+    function hide_row_reticle() {
+        row_selection_context['start_row'] = null;
+        row_selection_context['end_row'] = null;
+        update_rowspan_reticle();
+    }
+
+    /* создание нового комментария к выделенному диапазону строк */
+    function create_new_comment() {
+        var rows = get_top_and_bottom_row();
+        if (!rows) return;
+
+        var diff_id = rows['bottom'].closest('table').data('diff-pk'),
+            first_line_anchor = rows['top'].attr('id'),
+            last_line_anchor = rows['bottom'].attr('id'),
+            where_to_put_comment = $('td.line', rows['bottom']),
+            comment_container = $('<div>').addClass('ajax_comment_container ajax_comment_container_loading')
+                .text('loading..').appendTo(where_to_put_comment);
+
+        $.ajax({
+            'url': opts['new_comment_url'],
+            'data': {
+                'diff_id': diff_id,
+                'first_line_anchor': first_line_anchor,
+                'last_line_anchor': last_line_anchor
+            },
+            'complete': function (response, statusCode) {
+                comment_container.removeClass('ajax_comment_container_loading');
+                if (statusCode == 'error') {
+                    response = response.responseText || 'Произошла неведомая и непонятная ошибка.';
+                    comment_container.addClass('ajax_comment_container_error').text(response);
+                    comment_container.click(function () {
+                        comment_container.fadeOut(function () { $(this).remove(); });
+                    });
+                    setTimeout(function () {
+                        comment_container.fadeOut(function () { $(this).remove(); });
+                    }, 3000);
+                } else {
+                    $(comment_container).remove();
+                    $(where_to_put_comment).append(response.responseText);
+                    $('textarea', where_to_put_comment).last().focus();
+                }
+            }
+        });
+    }
+
+    /* подсветка кода, относящегося к комменту, при наведении */
+    $('.comment').live('mouseenter', function (ev) {
+        var self = $(ev.currentTarget),
+            first_row = $("#" + self.data('from')),
+            last_row = $("#" + self.data('to'));
+        display_row_reticle(first_row, last_row);
+    });
+    $('.comment').live('mouseleave', function (ev) {
+        hide_row_reticle();
+    });
+
+    /* сохранение коммента */
+    function save_comment(comment) {
+        var comment_id = comment.data('pk'),
+            comment_text = $('textarea', comment).val(),
+            status_span = $('.save-status', comment);
+        comment.data('save-timeout', null);
+        status_span.text('Saving...');
+
+        $.ajax({
+            'url': opts['save_comment_url'],
+            'type': 'POST',
+            'data': {
+                'comment_id': comment_id,
+                'text': comment_text,
+                'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']", comment).val()
+            },
+            'complete': function (response, statusCode) {
+                if (statusCode == 'error') {
+                    status_span.text('Save error');
+                } else {
+                    status_span.text('');
+                }
+            }
+        });
+    };
+
+    /* автосохранение по изменениям, с задержкой */
+    $('.comment textarea').live('keyup', function (ev) {
+        var self = $(this),
+            comment = self.closest('.comment'),
+            timeout_id,
+            old_timeout_id = comment.data('save-timeout');
+
+        $('.save-status', comment).text('*');
+
+        if (old_timeout_id) {
+            clearTimeout(old_timeout_id);
+        }
+        timeout_id = setTimeout(function () {
+            save_comment(comment);
+        }, opts['save_delay_ms']);
+        comment.data('save-timeout', timeout_id);
+    });
 }

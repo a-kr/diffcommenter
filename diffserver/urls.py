@@ -1,4 +1,8 @@
+# coding: utf-8
+
 from django.conf.urls import patterns, include, url
+from django.contrib.auth.views import login
+from django.contrib.auth.views import logout
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -8,6 +12,12 @@ urlpatterns = patterns('',
     # Examples:
     url(r'^$', 'diffapp.views.index', name='home'),
     url(r'^S(\d+)/$', 'diffapp.views.show_commit_sequence', name='commit_sequence'),
+    url(r'^S(\d+)/new_comment$', 'diffapp.views.ajax_new_comment', name='ajax_new_comment'),
+    url(r'^S(\d+)/save_comment$', 'diffapp.views.ajax_save_comment', name='ajax_save_comment'),
+
+    # Аутентификация
+    url(r'^login/$', login, name='login'),
+    url(r'^logout/$', logout, {"next_page": "/"}, name='logout'),
 
     # url(r'^diffserver/', include('diffserver.foo.urls')),
 

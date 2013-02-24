@@ -1,0 +1,15 @@
+<div class="comment" data-pk="{{ comment.pk }}" data-from="{{ comment.first_line_anchor }}" data-to="{{ comment.last_line_anchor }}">
+    <div class="comment-title">
+        {{ comment.added }}
+        <i>{{ comment.user }}</i>
+        <span class='save-status'></span>
+    </div>
+    <div class="comment-body">
+    {% csrf_token %}
+    {% if comment.user == user %}
+    <textarea>{{ comment.text }}</textarea>
+    {% else %}
+    <pre>{{ comment.text }}</pre>
+    {% endif %}
+    </div>
+</div>
