@@ -1,6 +1,7 @@
 body {
     padding-top: 60px;
     font-family: Consolas, Ubuntu Mono, monospace;
+    font-size: 13px;
 }
 
 #top_fixed_bar {
@@ -9,31 +10,42 @@ body {
     height: 20px; width: 100%;
     background-color: black; color: white;
     padding-left: 2em;
+    font-size: 120%;
+}
+#top_fixed_bar a {
+    color: #aaaaaa;
 }
 #subtop_fixed_bar {
     z-index: 100;
     position: fixed; top: 20px; left: 0px;
     height: 20px; width: 100%;
     background-color: #000088; color: white;
+    font-size: 120%;
 }
 #subsubtop_fixed_bar {
     z-index: 100;
     position: fixed; top: 40px; left: 0px;
     height: 20px; width: 100%;
     background-color: #008800; color: white;
+    font-size: 120%;
 }
 .top_bar_title {
     color: yellow;
     margin-left: 4em;
     margin-right: 4em;
 }
+.top_bar_title a {
+    color: inherit !important;
+    text-decoration: none !important;
+}
+.top_bar_title a:hover {
+    text-decoration: underline !important;
+}
+
 .top_bar_user_info {
     display: inline-block;
     float: right;
     color: lime;
     margin-left: 4em;
     margin-right: 4em;
-}
-#top_fixed_bar a {
-    color: #aaaaaa;
 }

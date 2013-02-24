@@ -122,6 +122,8 @@ def show_commit_sequence(request, object_id):
     c = {
         'commit_sequence_html': outfile.getvalue(),
         'commit_sequence': commit_sequence,
+        'comments': LineComment.objects.filter(
+            diff__commit__commit_sequence=commit_sequence)
     }
     return render(request, "commit_sequence.html", c)
 

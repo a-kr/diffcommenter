@@ -128,5 +128,17 @@ class LineComment(models.Model):
     first_line_anchor = models.TextField(u'Начало комментируемого диапазона')  # по факту это индекс в comment.lines
     last_line_anchor = models.TextField(u'Конец комментируемого диапазона')  # коммент визуально разместится под этой строкой
 
+    def make_anchor(self):
+        return "comment%s" % self.pk
+
+    def first_line_with_ellipsis(self):
+        lines = self.text.split('\n')
+        if not lines:
+            return ''
+        first_line = lines[0]
+        if len(lines) > 1:
+            first_line += ' (...)'
+        return first_line
+
     class Meta:
         ordering = ['id']

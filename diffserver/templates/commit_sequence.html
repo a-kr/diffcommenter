@@ -7,7 +7,7 @@
     [{{ commit_sequence.pk }}] {{ commit_sequence }}{% if commit_sequence.user %}({{ commit_sequence.user }}){% endif %}
 {% endblock %}
 {% block top_bar_title %}
-    {{ commit_sequence }}{% if commit_sequence.user %}({{ commit_sequence.user }}){% endif %}
+<a href="#">{{ commit_sequence }}</a>{% if commit_sequence.user %} ({{ commit_sequence.user }}){% endif %}
 {% endblock %}
 
 {% block entire_body %}
@@ -33,6 +33,23 @@
 
 <div id="horizontal_highlighter"></div>
 <div id="rowspan_reticle"></div>
+
+{% if comments %}
+<h2>Comments</h2>
+<ol>
+    {% for comment in comments %}
+    <li>
+        <a href="#{{ comment.make_anchor }}" class="jumps-to-anchor toc_comment_link">{{ comment.added }}</a>
+        <span class="toc_comment_user {% if user == comment.user %}toc_comment_my_own{% endif %}">
+            {{ comment.user }}:
+        </span>
+        {{ comment.first_line_with_ellipsis }}
+    </li>
+    {% endfor %}
+</ol>
+{% endif %}
+
+<h2>Commits</h2>
 
 {{ commit_sequence_html|safe }}
 

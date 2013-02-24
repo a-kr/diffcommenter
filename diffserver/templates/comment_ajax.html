@@ -1,6 +1,8 @@
-<div class="comment {% if comment.user == user %}my-own-comment{% endif %}" data-pk="{{ comment.pk }}" data-from="{{ comment.first_line_anchor }}" data-to="{{ comment.last_line_anchor }}">
+<div id="{{ comment.make_anchor }}" class="comment {% if comment.user == user %}my-own-comment{% endif %}" data-pk="{{ comment.pk }}" data-from="{{ comment.first_line_anchor }}" data-to="{{ comment.last_line_anchor }}">
     <div class="comment-title">
-        <span class="comment-date">{{ comment.added }}</span>
+        <span class="comment-date">
+            <a href="#{{ comment.make_anchor }}" class="jumps-to-anchor">{{ comment.added }}</a>
+        </span>
         <span class="user-name">{{ comment.user }}</span>
         <span class='save-status'></span>
         {% if comment.user == user %}
