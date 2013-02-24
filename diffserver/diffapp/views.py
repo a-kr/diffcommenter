@@ -65,20 +65,20 @@ def show_commit_sequence(request, object_id):
 
             if line.type == 'skip':
                 row = u'''<td class="lno" colspan="2" width="center">...</td>'''\
-                      u'''<td class="line" rel="{anchor}" style="{this_row_top_border}">&nbsp;'''.format(**locals())
+                      u'''<td class="line" style="{this_row_top_border}">&nbsp;'''.format(**locals())
             elif line.type == 'same':
                 row = u'''<td class="lno" ><a {anchor_insides}>{line.old_li}</a></td>'''\
                       u'''<td class="lno" ><a {anchor_insides}>{line.new_li}</a></td>'''\
-                      u'''<td class="line" rel="{anchor}" style="{this_row_top_border}"><pre>{fmt_line}</pre>'''.format(**locals())
+                      u'''<td class="line" style="{this_row_top_border}"><pre>{fmt_line}</pre>'''.format(**locals())
             elif line.type == 'old':
                 row = u'''<td class="lno" ><a {anchor_insides}>{line.old_li}</a></td>'''\
                       u'''<td class="lno" >&nbsp;</td>'''\
-                      u'''<td class="line" rel="{anchor}" style="background-color: #FFDDDD; {this_row_top_border}"><pre>{fmt_line}</pre>'''.format(**locals())
+                      u'''<td class="line" style="background-color: #FFDDDD; {this_row_top_border}"><pre>{fmt_line}</pre>'''.format(**locals())
             elif line.type == 'new':
                 row = u'''<td class="lno" >&nbsp;</td>'''\
                       u'''<td class="lno" ><a {anchor_insides}>{line.new_li}</a></td>'''\
-                      u'''<td class="line" rel="{anchor}" style="background-color: #DDFFDD; {this_row_top_border}"><pre>{fmt_line}</pre>'''.format(**locals())
-            print >>outfile, '<tr>'
+                      u'''<td class="line" style="background-color: #DDFFDD; {this_row_top_border}"><pre>{fmt_line}</pre>'''.format(**locals())
+            print >>outfile, '<tr rel="{anchor}">'.format(**locals())
             print >>outfile, row
             #for comment in line.comments:
             #    print >>outfile, '''<div class="comment">'''\

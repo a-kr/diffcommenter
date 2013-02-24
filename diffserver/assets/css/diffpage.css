@@ -81,6 +81,10 @@ a.fixed_link:hover {
     text-decoration: underline;
 }
 
+td.lno {
+    cursor: pointer;
+}
+
 #horizontal_highlighter {
     z-index: 50;
     position: absolute;
@@ -90,5 +94,17 @@ a.fixed_link:hover {
     background-color: yellow;
     pointer-events: none;
     left: 0px;
+    opacity: 0.5;
+}
+
+#rowspan_reticle {
+    z-index: 40;
+    position: absolute;
+    display: none;
+    pointer-events: none;
+    left: 0px;
+
+    background: #ffeeaa;
+    border: 1px solid #ffcc00;
     opacity: 0.5;
 }
