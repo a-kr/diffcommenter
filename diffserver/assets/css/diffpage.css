@@ -1,0 +1,93 @@
+.difftable {
+    border-collapse: collapse;
+    border: solid 1px gray;
+    font-family: Consolas, Ubuntu Mono, monospace;
+    font-size: 13px;
+}
+
+.difftable pre {
+    font-family: Consolas, Ubuntu Mono, monospace;
+    font-size: 13px;
+    margin-bottom:0;
+    margin-top:0;
+}
+
+.difftable th {
+    border: solid 1px gray;
+}
+
+.difftable td.line{
+    padding-left: 6px;
+    background-color: white;
+    vertical-align: middle;
+}
+
+.difftable td.lno {
+    border: solid 1px gray;
+    text-align: right;
+    vertical-align: top;
+}
+
+.comment {
+    margin: 3px;
+    margin-left: 30px;
+    border: solid 1px #888800;
+    background-color: #ffff88;
+}
+.comment-title {
+    border-bottom: gray;
+    background-color: #ffffbb;
+}
+.comment-body {
+    padding: 3px;
+}
+
+.fixed_bar_dull {
+    display: inline-block;
+    width: 8em;
+    color: #aaaaaa;
+    text-align: right;
+}
+
+a.commit-anchor {
+    color: #444488;
+}
+a.commit-anchor:hover {
+    color: #000088;
+}
+
+a.diff-anchor {
+    color: #448844;
+}
+a.diff-anchor:hover {
+    color: #008800;
+}
+
+a.line-anchor {
+    text-decoration: none;
+    color: inherit;
+}
+a.line-anchor:hover {
+    text-decoration: underline;
+    color: blue;
+}
+
+a.fixed_link {
+    color: white;
+    text-decoration: none;
+}
+a.fixed_link:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+#horizontal_highlighter {
+    position: absolute;
+    height: 20px;
+    width: 100%;
+    display: none;
+    background-color: yellow;
+    pointer-events: none;
+    left: 0px;
+    opacity: 0.5;
+}

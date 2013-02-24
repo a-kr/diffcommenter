@@ -1,0 +1,29 @@
+body {
+    padding-top: 60px;
+    font-family: Consolas, Ubuntu Mono, monospace;
+}
+
+#top_fixed_bar {
+    position: fixed; top: 0px; left: 0px;
+    height: 20px; width: 100%;
+    background-color: black; color: white;
+    padding-left: 2em;
+}
+#subtop_fixed_bar {
+    position: fixed; top: 20px; left: 0px;
+    height: 20px; width: 100%;
+    background-color: #000088; color: white;
+}
+#subsubtop_fixed_bar {
+    position: fixed; top: 40px; left: 0px;
+    height: 20px; width: 100%;
+    background-color: #008800; color: white;
+}
+.top_bar_title {
+    color: yellow;
+    margin-left: 4em;
+    margin-right: 4em;
+}
+#top_fixed_bar a {
+    color: #aaaaaa;
+}
