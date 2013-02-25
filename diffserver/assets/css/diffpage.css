@@ -155,9 +155,13 @@ td.lno {
     z-index: 50;
     position: absolute;
     height: 20px;
-    width: 100%;
+    border-radius: 10px;
+    right: 0px;
     display: none;
-    background-color: #ff8800;
+    border: solid 1px #0000ff;
+    background-color: #88ffff;
+    margin-right: 0.5em;
+    margin-left: 1em;
     pointer-events: none;
     left: 0px;
     opacity: 0.5;
