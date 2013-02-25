@@ -238,11 +238,19 @@ def export_comments(request, commit_sequence_id):
         'new': u'+',
     }
 
+    # для каждого диапазона строк выводим только первый, исходный коммент
+    already_commented_line_spans = set()  # of (start_index, end_index)
+
     for comment in comments:
         # anchor ~ "commit1-file1-line0x15"
         # адовый ад
         line_index_0 = int(comment.first_line_anchor.split('-')[-1][4:], 16)
         line_index_1 = int(comment.last_line_anchor.split('-')[-1][4:], 16)
+
+        if (line_index_0, line_index_1) in already_commented_line_spans:
+            continue
+        already_commented_line_spans.add((line_index_0, line_index_1))
+
         lines = comment.diff.lines[line_index_0 : line_index_1 + 1]
 
         # в районе какой строки в файле искать этот кусок?
@@ -270,5 +278,3 @@ def export_comments(request, commit_sequence_id):
         print >>exported, ''
 
     return HttpResponse(exported.getvalue(), mimetype='text/plain')
-
-
