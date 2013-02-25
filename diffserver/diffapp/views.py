@@ -3,7 +3,9 @@
 import keyword
 import re
 from collections import defaultdict
+from StringIO import StringIO
 
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -21,8 +23,6 @@ def index(request):
 def show_commit_sequence(request, object_id):
     """ TODO отрефакторить, вынести в шаблоны и пр.
     """
-
-    from StringIO import StringIO
     outfile = StringIO()
     try:
         commit_sequence = CommitSequence.objects.filter(pk=object_id)\
@@ -220,3 +220,55 @@ def ajax_del_comment(request, commit_sequence_id):
     comment.delete()
 
     return HttpResponse('OK')
+
+
+def export_comments(request, commit_sequence_id):
+    """ Экспорт комментов для помещения в trac """
+    sequence = get_object_or_404(CommitSequence, pk=commit_sequence_id)
+    comments = LineComment.objects.filter(diff__commit__commit_sequence__pk=commit_sequence_id)\
+            .select_related('diff').order_by('diff__filename', 'pk')
+
+    exported = StringIO()
+    url = settings.ROOT_URL + sequence.get_edit_url()
+    print >>exported, url
+    print >>exported, ''
+
+    ONE_CHAR_LINE_TYPES = {
+        'old': u'-',
+        'new': u'+',
+    }
+
+    for comment in comments:
+        # anchor ~ "commit1-file1-line0x15"
+        # адовый ад
+        line_index_0 = int(comment.first_line_anchor.split('-')[-1][4:], 16)
+        line_index_1 = int(comment.last_line_anchor.split('-')[-1][4:], 16)
+        lines = comment.diff.lines[line_index_0 : line_index_1 + 1]
+
+        # в районе какой строки в файле искать этот кусок?
+        old_line_numbers = filter(None, [line.old_li for line in lines])
+        new_line_numbers = filter(None, [line.new_li for line in lines])
+        around_line_no = (new_line_numbers or old_line_numbers or [0])[0]
+
+        text_lines = [line.line for line in lines]
+        rendered_lines = [
+            u'%5d%s %s' % (
+                line.new_li or '',
+                ONE_CHAR_LINE_TYPES.get(line.type, ' '),
+                line.line
+            ) for line in lines
+        ]
+
+        print >>exported, ' *', comment.diff.filename, '@', around_line_no
+        print >>exported, ''
+        print >>exported, '{{{'
+        for line in rendered_lines:
+            print >>exported, line
+        print >>exported, '}}}'
+        for line in comment.text.split('\n'):
+            print >>exported, '    ', line
+        print >>exported, ''
+
+    return HttpResponse(exported.getvalue(), mimetype='text/plain')
+
+

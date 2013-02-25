@@ -17,7 +17,8 @@
         init_diffpage({
             'new_comment_url': "{% url ajax_new_comment commit_sequence.pk %}",
             'save_comment_url': "{% url ajax_save_comment commit_sequence.pk %}",
-            'del_comment_url': "{% url ajax_del_comment commit_sequence.pk %}"
+            'del_comment_url': "{% url ajax_del_comment commit_sequence.pk %}",
+            'export_comments_url': "{% url export_comments commit_sequence.pk %}"
         });
     });
 </script>
@@ -48,6 +49,13 @@
     {% endfor %}
 </ol>
 {% endif %}
+
+<div>
+    <button id="export_comments_btn">vvv Export comments for Trac vvv</button>
+</div>
+<div>
+    <textarea id="exported_comments"></textarea>
+</div>
 
 {% if commit_sequence.commits.all %}
 <h2>Commits</h2>

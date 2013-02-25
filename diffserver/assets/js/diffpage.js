@@ -3,11 +3,13 @@ function init_diffpage(opts) {
         'new_comment_url': '',
         'save_comment_url': '',
         'del_comment_url': '',
+        'export_comments_url': '',
         'save_delay_ms': 1000
     };
 
     var MINIMAL_PX_OFFSET_TO_CONSIDER_HEADER_CURRENT = $(window).height() / 2;
     var ROW_HEIGHT = 16;
+    var MAX_EXPORT_TEXTAREA_HEIGHT = 350;
 
     function scroll_to_center_element_in_window(el) {
         var windowHeight = $(window).height();
@@ -328,5 +330,24 @@ function init_diffpage(opts) {
             scroll_to_center_element_in_window($('.comment-title', next_comment));
         }
         return false;
+    });
+
+    /* экспорт комментов */
+    $('#export_comments_btn').click(function (ev) {
+        var textarea = $('#exported_comments');
+        textarea.val('Loading...');
+        $.ajax({
+            'url': opts['export_comments_url'],
+            'complete': function (response, statusText) {
+                if (statusText == 'error') {
+                    textarea.val('Export error. ' + response.responseText);
+                } else {
+                    textarea.val(response.responseText);
+                    textarea.css({
+                        'height': Math.min(textarea[0].scrollHeight + ROW_HEIGHT, MAX_EXPORT_TEXTAREA_HEIGHT)
+                    });
+                }
+            }
+        });
     });
 }

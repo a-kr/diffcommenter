@@ -206,3 +206,8 @@ a.jslink:hover {
     color: blue;
     text-decoration: underline;
 }
+
+#exported_comments {
+    width: 80em;
+    border: dashed 1px black;
+}

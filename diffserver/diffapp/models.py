@@ -106,7 +106,7 @@ class Diff(models.Model):
                     r1_li = int(m.groups()[0])
                     r2_li = int(m.groups()[1])
                     if not (r1_li == 1 or r2_li == 1):
-                        diff_t.append((None, None, 'skip', ''))
+                        diff_t.append((None, None, 'skip', '...'))
             elif type == ' ':
                 diff_t.append((r1_li, r2_li, 'same', diff[i][1:]))
                 r1_li = r1_li + 1
