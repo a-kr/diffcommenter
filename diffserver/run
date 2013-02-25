@@ -1,2 +1,2 @@
 #!/bin/sh
-PYTHONPATH=`pwd` DJANGO_SETTINGS_MODULE=settings django-admin runserver
+PYTHONPATH=`pwd` DJANGO_SETTINGS_MODULE=settings django-admin runserver 8200
