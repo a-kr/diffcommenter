@@ -40,6 +40,7 @@
 .comment-title {
     border-bottom: gray;
 }
+
 .comment-body {
     padding: 3px;
     margin-left: 1em;
@@ -191,4 +192,13 @@ td.lno {
     color: #888888;
     text-decoration: none;
     border-bottom: solid 1px #888888;
+}
+
+a.jslink {
+    color: blue;
+    text-decoration: none;
+}
+a.jslink:hover {
+    color: blue;
+    text-decoration: underline;
 }

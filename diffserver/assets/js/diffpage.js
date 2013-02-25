@@ -295,4 +295,34 @@ function init_diffpage(opts) {
             'height': el.scrollHeight + ROW_HEIGHT
         });
     });
+
+    /* прыжки к предыдущему и следующему комментам */
+    $('a.prev-comment').live('click', function (ev) {
+        var self = $(this),
+            this_comment = self.closest('.comment'),
+            this_comment_pos = this_comment.position().top,
+            prev_comment = $('.comment').filter(function () {
+                return ($(this).position().top < this_comment_pos);
+            }).last();
+        ev.preventDefault();
+        if (prev_comment) {
+            location.href = '#' + prev_comment.attr('id');
+            scroll_to_center_element_in_window(prev_comment);
+        }
+        return false;
+    });
+    $('a.next-comment').live('click', function (ev) {
+        var self = $(this),
+            this_comment = self.closest('.comment'),
+            this_comment_pos = this_comment.position().top,
+            next_comment = $('.comment').filter(function () {
+                return ($(this).position().top > this_comment_pos);
+            }).first();
+        ev.preventDefault();
+        if (next_comment) {
+            location.href = '#' + next_comment.attr('id');
+            scroll_to_center_element_in_window($('.comment-title', next_comment));
+        }
+        return false;
+    });
 }

@@ -7,13 +7,17 @@
         <span class='save-status'></span>
         {% if comment.user == user %}
         <span class='del-comment'>
-            <a href="#">delete</a>
+            <a href="#" class="jslink">delete</a>
         </span>
         {% else %}
         <span class='reply-to-comment'>
-            <a href="#">reply</a>
+            <a href="#" class="jslink">reply</a>
         </span>
         {% endif %}
+        <span class='comment-doubly-linked'>
+            <a href="#" class="jslink prev-comment">^ previous</a>
+            <a href="#" class="jslink next-comment">next v</a>
+        </span>
     </div>
     <div class="comment-body">
     {% csrf_token %}
