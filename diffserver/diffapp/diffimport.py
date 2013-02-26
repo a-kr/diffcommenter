@@ -85,7 +85,7 @@ def make_diff(lines, commit=None):
         :param commit: коммит, к которому принадлежит создаваемый дифф
         :returns: новый, сохраненный в БД объект Diff
     """
-    assert len(lines) > 4
+    assert len(lines) > 2
     assert lines[0].startswith('diff ')
 
     diff = Diff(commit=commit)
