@@ -14,7 +14,7 @@
 <div id="top_fixed_bar">
     <a class="bland_link" href="/">Diffcommenter</a>
     |
-    <span class="top_bar_title">{% block top_bar_title %}Главная{% endblock %}</span>
+    <span class="top_bar_title">{% block top_bar_title %}Main{% endblock %}</span>
     <div class="top_bar_user_info">
         {% if user.is_authenticated %}
         ☑ <i>{{ user }}</i> (<a href="{% url logout %}">logout</a>)

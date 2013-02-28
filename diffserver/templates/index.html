@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block entire_body %}
 <h1>Index page</h1>
-Hello!
+{% for seq in sequences %}
+<div>
+    <span style="display: inline-block; width: 8em; text-align: right">{{ seq.pk }}.</span>
+    {{ seq.added }}
+    <a href="{{ seq.get_edit_url }}">{{ seq.title }}</a>, {{ seq.commits.all|length }} commit(s)
+    {% if seq.user %}, added by <i>{{ seq.user }}</i>{% endif %}
+</div>
+{% endfor %}
 {% endblock %}

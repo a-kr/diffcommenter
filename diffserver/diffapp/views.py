@@ -15,7 +15,10 @@ from diffapp.models import CommitSequence, Diff, LineComment
 
 
 def index(request):
+    LAST_N = 20
+    sequences = CommitSequence.objects.order_by('-id').prefetch_related('commits')[:LAST_N]
     c = {
+        'sequences': sequences,
     }
     return render(request, "index.html", c)
 
