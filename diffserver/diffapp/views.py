@@ -6,12 +6,15 @@ from collections import defaultdict
 from StringIO import StringIO
 
 from django.conf import settings
-from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.template.loader import render_to_string
+from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
+from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
 
 from diffapp.models import CommitSequence, Diff, LineComment
+from diffapp.diffimport import make_commit_sequence
 
 
 def index(request):
@@ -281,3 +284,26 @@ def export_comments(request, commit_sequence_id):
         print >>exported, ''
 
     return HttpResponse(exported.getvalue(), mimetype='text/plain')
+
+
+@csrf_exempt
+def submit_diff_api(request):
+    """ Вьюха для API публикации диффов """
+    title = request.POST.get('title')
+    diff = request.POST.get('diff')
+    login = request.POST.get('login')
+    password = request.POST.get('password')
+    if not all((title, diff, login, password)):
+        return HttpResponse('Not all parameters are specified (title, diff, login, password - something was empty)', code=400)
+
+    user = get_object_or_404(User, username=login)
+    if not user.check_password(password):
+        return HttpResponse('Password is incorrect', code=403)
+
+    diff_lines = diff.split('\n')
+
+    sequence = make_commit_sequence(diff_lines, user=user, title=title)
+    url = settings.ROOT_URL + sequence.get_edit_url()
+    return HttpResponse(url)
+
+

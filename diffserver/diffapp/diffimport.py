@@ -6,7 +6,7 @@
 from diffapp.models import Diff, Commit, CommitSequence
 
 
-def make_commit_sequence(git_show_lines):
+def make_commit_sequence(git_show_lines, title=None, user=None):
     """
         :param git_show_lines: строчки вывода git show %commit_hash2%..%commit_hash1%
         :returns: новый, сохраненный в БД объект CommitSequence
@@ -18,6 +18,8 @@ def make_commit_sequence(git_show_lines):
     current_commit_lines = []
 
     sequence = CommitSequence()
+    sequence.title = title
+    sequence.user = user
     sequence.save()
 
     i = 0
