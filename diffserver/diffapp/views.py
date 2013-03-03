@@ -232,7 +232,7 @@ def export_comments(request, commit_sequence_id):
     """ Экспорт комментов для помещения в trac """
     sequence = get_object_or_404(CommitSequence, pk=commit_sequence_id)
     comments = LineComment.objects.filter(diff__commit__commit_sequence__pk=commit_sequence_id)\
-            .select_related('diff').order_by('diff__filename', 'pk')
+            .select_related('diff').order_by('first_line_anchor')
 
     exported = StringIO()
     url = settings.ROOT_URL + sequence.get_edit_url()
@@ -246,6 +246,13 @@ def export_comments(request, commit_sequence_id):
 
     # для каждого диапазона строк выводим только первый, исходный коммент
     already_commented_line_spans = set()  # of (start_index, end_index)
+
+    for comment in comments:
+        # anchor ~ "commit1-file1-line0x15"
+        # адовый ад
+        comment.line_index_0 = int(comment.first_line_anchor.split('-')[-1][4:], 16)
+
+    comments = sorted(comments, key=lambda c: (c.diff.filename, c.line_index_0))
 
     for comment in comments:
         # anchor ~ "commit1-file1-line0x15"
