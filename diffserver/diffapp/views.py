@@ -252,7 +252,7 @@ def export_comments(request, commit_sequence_id):
         # адовый ад
         comment.line_index_0 = int(comment.first_line_anchor.split('-')[-1][4:], 16)
 
-    comments = sorted(comments, key=lambda c: (c.diff.filename, c.line_index_0))
+    comments = sorted(comments, key=lambda c: (c.diff.commit_id, c.diff.pk, c.line_index_0))
 
     for comment in comments:
         # anchor ~ "commit1-file1-line0x15"
@@ -273,7 +273,7 @@ def export_comments(request, commit_sequence_id):
 
         text_lines = [line.line for line in lines]
         rendered_lines = [
-            u'%5d%s %s' % (
+            u'%5s%s %s' % (
                 line.new_li or '',
                 ONE_CHAR_LINE_TYPES.get(line.type, ' '),
                 line.line
@@ -287,7 +287,8 @@ def export_comments(request, commit_sequence_id):
             print >>exported, line
         print >>exported, '}}}'
         for line in comment.text.split('\n'):
-            print >>exported, '    ', line
+            shifted_line = ('    ' + line).rstrip()
+            print >>exported, shifted_line
         print >>exported, ''
 
     return HttpResponse(exported.getvalue(), mimetype='text/plain')
