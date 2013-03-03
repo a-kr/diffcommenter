@@ -21,6 +21,6 @@ class Command(BaseCommand):
         difftext = difftext.decode('utf-8')
         difflines = difftext.split('\n')
 
-        sequence = make_commit_sequence(difflines)
+        sequence = make_commit_sequence(difflines, title='(stdin)')
         url = settings.ROOT_URL + sequence.get_edit_url()
         print url

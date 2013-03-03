@@ -3,6 +3,7 @@ import os
 import sys
 from subprocess import Popen, PIPE
 from ConfigParser import ConfigParser
+from optparse import OptionParser
 import urllib, urllib2
 
 
@@ -84,6 +85,12 @@ def send_diff_to_server(title, diff):
     print response.read()
 
 if __name__ == '__main__':
+    parser = OptionParser()
+
+    parser.add_option("--only", "--commit", "-o", "-c", dest="only_commit", default=None, help=u"send only specified commit to review")
+    (options, args) = parser.parse_args()
+    from_commit = args[0] if len(args) > 0 else None
+
     branch = get_current_branch_name()
 
     base_branch = 'develop'
@@ -91,6 +98,5 @@ if __name__ == '__main__':
         base_branch = 'master'
     # TODO считать оверрайд из argparse
 
-    # TODO from_commit, only_commit из argparse
-    diff = read_diff(base_branch=base_branch)
+    diff = read_diff(base_branch=base_branch, only_commit=options.only_commit, from_commit=from_commit)
     send_diff_to_server(branch, diff)
