@@ -46,25 +46,44 @@ def get_current_branch_name():
     return ref_parts[2]
 
 
-def read_diff(only_commit=None, from_commit=None, base_branch='develop'):
+DUMMY_COMMIT_HEADER = """commit 0000000000000000000000000000000000000000
+Author: Committer Guy <committer.guy@gmail.com>
+Date:   Thu Jan 1 00:00:01 2000 +0400
+
+    Fake commit containing "git diff" result
+
+"""
+
+
+def read_diff(only_commit=None, from_commit=None, base_branch='develop', single_diff=False):
     """ Считывает описание набора коммитов в ветке (git show). Возвращает строку.
 
         :param only_commit: вернуть описание только коммита с этим хешом
         :param from_commit: вернуть описание коммитов, начиная со следующего после from_commit и до HEAD включительно
         :param base_branch: если не указан ни from_commit, ни only_commit - вернуть все коммиты в ветке после ответвления
                             этой ветки от base_branch (по умолч. develop)
+        :param single_diff: если True, то схлопнуть все коммиты в один (вместо git show делать git diff)
     """
     assert not (only_commit and from_commit)
 
-    if only_commit:
-        process = Popen("git show %s" % only_commit, shell=True, stdout=PIPE)
-    elif from_commit:
-        process = Popen("git show %s..HEAD" % from_commit, shell=True, stdout=PIPE)
+    if single_diff:
+        cmd = "git diff "
     else:
-        process = Popen("git show `git merge-base HEAD %s`..HEAD" % base_branch, shell=True, stdout=PIPE)
+        cmd = "git show "
+
+    if only_commit:
+        process = Popen(cmd + "%s" % only_commit, shell=True, stdout=PIPE)
+    elif from_commit:
+        process = Popen(cmd + "%s..HEAD" % from_commit, shell=True, stdout=PIPE)
+    else:
+        process = Popen(cmd + "`git merge-base HEAD %s`..HEAD" % base_branch, shell=True, stdout=PIPE)
     out, err = process.communicate()
     if process.returncode != 0:
-        die('`git branch` failed')
+        die('`%s` failed' % cmd)
+
+    if single_diff:
+        out = DUMMY_COMMIT_HEADER + out
+
     return out
 
 
@@ -88,6 +107,7 @@ if __name__ == '__main__':
     parser = OptionParser()
 
     parser.add_option("--only", "--commit", "-o", "-c", dest="only_commit", default=None, help=u"send only specified commit to review")
+    parser.add_option("--diff", "-d", dest="single_diff", default=None, action="store_true", help=u"collapse all commits in range into a single diff")
     (options, args) = parser.parse_args()
     from_commit = args[0] if len(args) > 0 else None
 
@@ -98,5 +118,5 @@ if __name__ == '__main__':
         base_branch = 'master'
     # TODO считать оверрайд из argparse
 
-    diff = read_diff(base_branch=base_branch, only_commit=options.only_commit, from_commit=from_commit)
+    diff = read_diff(base_branch=base_branch, only_commit=options.only_commit, from_commit=from_commit, single_diff=options.single_diff)
     send_diff_to_server(branch, diff)
