@@ -62,7 +62,7 @@ function init_diffpage(opts) {
         var set_fixed_link = function (link_to_set, destination_h) {
             if (!destination_h) return;
             $(link_to_set).text($('span', destination_h).text());
-            $(link_to_set).attr('href', $('a', destination_h).attr('href'));
+            $(link_to_set).attr('href', $('a.anchor-thingy', destination_h).attr('href'));
         };
 
         set_fixed_link('#current_h3_fixed', current_h3);
