@@ -33,6 +33,10 @@ class Commit(models.Model):
     def head(self):
         return self.head_lines.split('\n')
 
+    @property
+    def is_fake(self):
+        return set(self.sha1) == set(['0'])
+
     def make_anchor(self):
         return "commit%s" % self.pk
 

@@ -232,7 +232,7 @@ def export_comments(request, commit_sequence_id):
     """ Экспорт комментов для помещения в trac """
     sequence = get_object_or_404(CommitSequence, pk=commit_sequence_id)
     comments = LineComment.objects.filter(diff__commit__commit_sequence__pk=commit_sequence_id)\
-            .select_related('diff').order_by('first_line_anchor')
+            .select_related('diff', 'diff__commit').order_by('first_line_anchor')
 
     exported = StringIO()
     url = settings.ROOT_URL + sequence.get_edit_url()
@@ -280,7 +280,23 @@ def export_comments(request, commit_sequence_id):
             ) for line in lines
         ]
 
-        print >>exported, ' *', comment.diff.filename, '@', around_line_no
+        commented_chunk_title = u'%s @ %s' % (comment.diff.filename, around_line_no)
+        if settings.TRAC_FILE_IN_COMMIT_URL_TEMPLATE and settings.TRAC_REVISION_URL_TEMPLATE \
+                and not comment.diff.commit.is_fake:
+            rev_url = settings.TRAC_REVISION_URL_TEMPLATE % {
+                'sha1': comment.diff.commit.sha1,
+            }
+            file_url = settings.TRAC_FILE_IN_COMMIT_URL_TEMPLATE % {
+                'filename': comment.diff.filename,
+                'sha1': comment.diff.commit.sha1,
+                'lineno': around_line_no,
+            }
+            print >>exported, ' *', u'[%s %s] [%s %s]' % (
+                    rev_url, comment.diff.commit.short_hash,
+                    file_url, commented_chunk_title
+                )
+        else:
+            print >>exported, ' *', comment.diff.commit.short_hash, commented_chunk_title
         print >>exported, ''
         print >>exported, '{{{'
         for line in rendered_lines:

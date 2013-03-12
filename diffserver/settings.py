@@ -1,3 +1,4 @@
+# coding: utf-8
 # Django settings for diffserver project.
 import os
 
@@ -141,3 +142,10 @@ LOGGING = {
         },
     }
 }
+
+# ссылки на строчку в конкретной ревизии файла в траке, подставляемые в экспортированные комменты,
+# будут формироваться из этого шаблона
+# (Если шаблон пустой или None, то не будут):
+TRAC_FILE_IN_COMMIT_URL_TEMPLATE = 'https://dev-trac.netstream.ru/browser/git_da/%(filename)s?rev=%(sha1)s#L%(lineno)s'
+# аналогичный шаблон для ссылки на весь коммит
+TRAC_REVISION_URL_TEMPLATE = 'https://dev-trac.netstream.ru/changeset/%(sha1)s/git_da'
