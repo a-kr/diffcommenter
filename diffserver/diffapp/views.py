@@ -38,7 +38,10 @@ def show_commit_sequence(request, object_id):
         return HttpResponse(code=404)
 
     def diff_to_html(self, commit_number, number_in_commit):
-        print >>outfile, '<h4 class="diff"><span>', self.filename, '</span>'
+        heading = self.filename
+        if self.trac_url:
+            heading = '<a class="trac_link" href="%s">%s</a>' % (self.trac_url, heading)
+        print >>outfile, '<h4 class="diff"><span>', heading, '</span>'
         anchor = 'commit%s-file%s' % (commit_number, number_in_commit)
         print >>outfile, u'<a class="anchor-thingy jumps-to-anchor diff-anchor" id="{anchor}" href="#{anchor}">¶</a>'.format(**locals()) , '</h4>'
         print >>outfile, '<pre>' + '\n'.join(self.head) + '</pre>'
@@ -116,7 +119,13 @@ def show_commit_sequence(request, object_id):
 
     def commit_to_html(self):
         print >>outfile, '<hr>'
-        print >>outfile, '<h3 class="commit"><span>', self.oneline_summary, '</span>'
+        if self.trac_url:
+            heading = u'<a class="trac_link" href="%s">%s</a> %s' % (
+                self.trac_url, self.short_hash, self.first_line
+            )
+        else:
+            heading = self.oneline_summary
+        print >>outfile, '<h3 class="commit"><span>', heading, '</span>'
         anchor = self.make_anchor()
         print >>outfile, u'<a class="anchor-thingy jumps-to-anchor commit-anchor" id="{anchor}" href="#{anchor}">¶</a>'.format(**locals()), '</h3>'
         print >>outfile, '<pre>' + '\n'.join(self.head).replace('<', '&lt;') + '</pre>'
@@ -283,17 +292,9 @@ def export_comments(request, commit_sequence_id):
         commented_chunk_title = u'%s @ %s' % (comment.diff.filename, around_line_no)
         if settings.TRAC_FILE_IN_COMMIT_URL_TEMPLATE and settings.TRAC_REVISION_URL_TEMPLATE \
                 and not comment.diff.commit.is_fake:
-            rev_url = settings.TRAC_REVISION_URL_TEMPLATE % {
-                'sha1': comment.diff.commit.sha1,
-            }
-            file_url = settings.TRAC_FILE_IN_COMMIT_URL_TEMPLATE % {
-                'filename': comment.diff.filename,
-                'sha1': comment.diff.commit.sha1,
-                'lineno': around_line_no,
-            }
             print >>exported, ' *', u'[%s %s] [%s %s]' % (
-                    rev_url, comment.diff.commit.short_hash,
-                    file_url, commented_chunk_title
+                    comment.diff.commit.trac_url, comment.diff.commit.short_hash,
+                    comment.diff.get_trac_url(lineno=around_line_no), commented_chunk_title
                 )
         else:
             print >>exported, ' *', comment.diff.commit.short_hash, commented_chunk_title

@@ -198,6 +198,17 @@ td.lno {
     border-bottom: solid 1px #888888;
 }
 
+.trac_link {
+    color: #BB0000;
+    text-decoration: none;
+    border-bottom: dashed 1px #BB0000;
+}
+.trac_link:hover {
+    color: #BB0000;
+    text-decoration: none;
+    border-bottom: solid 1px #BB0000;
+}
+
 a.jslink {
     color: blue;
     text-decoration: none;
