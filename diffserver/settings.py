@@ -35,6 +35,8 @@ SITE_ID = 1
 USE_I18N = True
 USE_L10N = True
 
+SESSION_COOKIE_NAME = 'diffcommenter-sessionid'
+
 USE_TZ = True
 
 MEDIA_ROOT = ''
