@@ -1,2 +1,2 @@
 #!/bin/sh
-PYTHONPATH=`pwd` DJANGO_SETTINGS_MODULE=settings django-admin shell
+PYTHONPATH=`pwd` DJANGO_SETTINGS_MODULE=settings django-admin.py shell

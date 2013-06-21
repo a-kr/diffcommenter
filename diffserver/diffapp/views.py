@@ -237,7 +237,82 @@ def ajax_del_comment(request, commit_sequence_id):
     return HttpResponse('OK')
 
 
-def export_comments(request, commit_sequence_id):
+def export_comments_redmine(request, commit_sequence_id):
+    """ Экспорт комментов для помещения в Redmine """
+    sequence = get_object_or_404(CommitSequence, pk=commit_sequence_id)
+    comments = LineComment.objects.filter(diff__commit__commit_sequence__pk=commit_sequence_id)\
+            .select_related('diff', 'diff__commit').order_by('first_line_anchor')
+
+    exported = StringIO()
+    url = settings.ROOT_URL + sequence.get_edit_url()
+    print >>exported, url
+    print >>exported, ''
+
+    ONE_CHAR_LINE_TYPES = {
+        'old': u'-',
+        'new': u'+',
+    }
+
+    # для каждого диапазона строк выводим только первый, исходный коммент
+    already_commented_line_spans = set()  # of (start_index, end_index)
+
+    for comment in comments:
+        # anchor ~ "commit1-file1-line0x15"
+        # адовый ад
+        comment.line_index_0 = int(comment.first_line_anchor.split('-')[-1][4:], 16)
+
+    comments = sorted(comments, key=lambda c: (c.diff.commit_id, c.diff.pk, c.line_index_0))
+
+    for comment in comments:
+        # anchor ~ "commit1-file1-line0x15"
+        # адовый ад
+        line_index_0 = int(comment.first_line_anchor.split('-')[-1][4:], 16)
+        line_index_1 = int(comment.last_line_anchor.split('-')[-1][4:], 16)
+
+        if (line_index_0, line_index_1) in already_commented_line_spans:
+            continue
+        already_commented_line_spans.add((line_index_0, line_index_1))
+
+        lines = comment.diff.lines[line_index_0 : line_index_1 + 1]
+
+        # в районе какой строки в файле искать этот кусок?
+        old_line_numbers = filter(None, [line.old_li for line in lines])
+        new_line_numbers = filter(None, [line.new_li for line in lines])
+        around_line_no = (new_line_numbers or old_line_numbers or [0])[0]
+
+        text_lines = [line.line for line in lines]
+        rendered_lines = [
+            u'%5s%s %s' % (
+                line.new_li or '',
+                ONE_CHAR_LINE_TYPES.get(line.type, ' '),
+                line.line
+            ) for line in lines
+        ]
+
+        commented_chunk_title = u'**%s** @ %s' % (comment.diff.filename, around_line_no)
+        #if settings.TRAC_FILE_IN_COMMIT_URL_TEMPLATE and settings.TRAC_REVISION_URL_TEMPLATE \
+                #and not comment.diff.commit.is_fake:
+            #print >>exported, ' *', u'[%s %s] [%s %s]' % (
+                    #comment.diff.commit.trac_url, comment.diff.commit.short_hash,
+                    #comment.diff.get_trac_url(lineno=around_line_no), commented_chunk_title
+                #)
+        #else:
+        print >>exported, '_' + comment.diff.commit.short_hash + '_', commented_chunk_title
+        print >>exported, ''
+        print >>exported, '<pre>'
+        for line in rendered_lines:
+            print >>exported, line
+        print >>exported, '</pre>'
+        for line in comment.text.split('\n'):
+            shifted_line = ('    ' + line).rstrip()
+            print >>exported, shifted_line
+        print >>exported, ''
+        print >>exported, ''
+
+    return HttpResponse(exported.getvalue(), mimetype='text/plain')
+
+
+def export_comments_trac(request, commit_sequence_id):
     """ Экспорт комментов для помещения в trac """
     sequence = get_object_or_404(CommitSequence, pk=commit_sequence_id)
     comments = LineComment.objects.filter(diff__commit__commit_sequence__pk=commit_sequence_id)\
