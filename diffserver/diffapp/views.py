@@ -269,8 +269,8 @@ def export_comments_redmine(request, commit_sequence_id):
         line_index_0 = int(comment.first_line_anchor.split('-')[-1][4:], 16)
         line_index_1 = int(comment.last_line_anchor.split('-')[-1][4:], 16)
 
-        if (line_index_0, line_index_1) in already_commented_line_spans:
-            continue
+        #if (line_index_0, line_index_1) in already_commented_line_spans:
+        #    continue
         already_commented_line_spans.add((line_index_0, line_index_1))
 
         lines = comment.diff.lines[line_index_0 : line_index_1 + 1]
