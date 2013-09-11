@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block entire_body %}
 <h1>Login</h1>
-<form id="user_login_form" action="{% url login %}" method="POST">{% csrf_token %}
+<form id="user_login_form" action="{% url 'login' %}" method="POST">{% csrf_token %}
     <table>
         {{ form.as_table }}
     </table>

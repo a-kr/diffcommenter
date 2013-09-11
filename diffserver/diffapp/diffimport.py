@@ -18,7 +18,7 @@ def make_commit_sequence(git_show_lines, title=None, user=None):
     current_commit_lines = []
 
     sequence = CommitSequence()
-    sequence.title = title
+    sequence.title = title or 'Untitled commit sequence'
     sequence.user = user
     sequence.save()
 

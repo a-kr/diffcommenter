@@ -2,7 +2,7 @@
 {% block entire_body %}
 <h1>Password change</h1>
 {% if form %}
-<form id="user_login_form" action="{% url chpasswd %}" method="POST">{% csrf_token %}
+<form id="user_login_form" action="{% url 'chpasswd' %}" method="POST">{% csrf_token %}
     <table>
         {{ form.as_table }}
     </table>

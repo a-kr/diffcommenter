@@ -15,10 +15,10 @@
 <script type="text/javascript">
     $(function() {
         init_diffpage({
-            'new_comment_url': "{% url ajax_new_comment commit_sequence.pk %}",
-            'save_comment_url': "{% url ajax_save_comment commit_sequence.pk %}",
-            'del_comment_url': "{% url ajax_del_comment commit_sequence.pk %}",
-            'export_comments_url': "{% url export_comments commit_sequence.pk %}"
+            'new_comment_url': "{% url 'ajax_new_comment' commit_sequence.pk %}",
+            'save_comment_url': "{% url 'ajax_save_comment' commit_sequence.pk %}",
+            'del_comment_url': "{% url 'ajax_del_comment' commit_sequence.pk %}",
+            'export_comments_url': "{% url 'export_comments' commit_sequence.pk %}"
         });
     });
 </script>

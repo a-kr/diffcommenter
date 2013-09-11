@@ -15,7 +15,7 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
-ROOT_URL = 'http://a-kr.at.netstream.ru:82'
+ROOT_URL = 'http://localhost/'
 
 MANAGERS = ADMINS
 
@@ -144,9 +144,3 @@ LOGGING = {
         },
     }
 }
-
-# ссылки на строчку в конкретной ревизии файла в траке будут формироваться из этого шаблона
-# (Если шаблон пустой, то не будут):
-TRAC_FILE_IN_COMMIT_URL_TEMPLATE = 'https://dev-trac.netstream.ru/browser/git_da/%(filename)s?rev=%(sha1)s#L%(lineno)s'
-# аналогичный шаблон для ссылки на весь коммит
-TRAC_REVISION_URL_TEMPLATE = 'https://dev-trac.netstream.ru/changeset/%(sha1)s/git_da'

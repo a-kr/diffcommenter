@@ -290,13 +290,6 @@ def export_comments_redmine(request, commit_sequence_id):
         ]
 
         commented_chunk_title = u'**%s** @ %s' % (comment.diff.filename, around_line_no)
-        #if settings.TRAC_FILE_IN_COMMIT_URL_TEMPLATE and settings.TRAC_REVISION_URL_TEMPLATE \
-                #and not comment.diff.commit.is_fake:
-            #print >>exported, ' *', u'[%s %s] [%s %s]' % (
-                    #comment.diff.commit.trac_url, comment.diff.commit.short_hash,
-                    #comment.diff.get_trac_url(lineno=around_line_no), commented_chunk_title
-                #)
-        #else:
         print >>exported, '_' + comment.diff.commit.short_hash + '_', commented_chunk_title
         print >>exported, ''
         print >>exported, '<pre>'
@@ -365,14 +358,7 @@ def export_comments_trac(request, commit_sequence_id):
         ]
 
         commented_chunk_title = u'%s @ %s' % (comment.diff.filename, around_line_no)
-        if settings.TRAC_FILE_IN_COMMIT_URL_TEMPLATE and settings.TRAC_REVISION_URL_TEMPLATE \
-                and not comment.diff.commit.is_fake:
-            print >>exported, ' *', u'[%s %s] [%s %s]' % (
-                    comment.diff.commit.trac_url, comment.diff.commit.short_hash,
-                    comment.diff.get_trac_url(lineno=around_line_no), commented_chunk_title
-                )
-        else:
-            print >>exported, ' *', comment.diff.commit.short_hash, commented_chunk_title
+        print >>exported, ' *', comment.diff.commit.short_hash, commented_chunk_title
         print >>exported, ''
         print >>exported, '{{{'
         for line in rendered_lines:
