@@ -9,6 +9,7 @@ Requirements
 
 * Python 2.7
 * Django 1.5
+* psycopg2
 * PostgreSQL 9.1
 * (optionally) gunicorn
 
