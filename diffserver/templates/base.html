@@ -21,6 +21,7 @@
         ☑ <i>{{ user }}</i> (<a href="{% url 'chpasswd' %}" title="Change your password">chpasswd</a>|<a href="{% url 'logout' %}">logout</a>)
         {% else %}
         ☒ <a href="{% url 'login' %}?next={{ request.get_full_path }}">login</a>
+        | <a href="{% url 'register' %}">register</a>
         {% endif %}
     </div>
 </div>

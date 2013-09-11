@@ -5,9 +5,12 @@ import re
 from collections import defaultdict
 from StringIO import StringIO
 
+from django import forms
+from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.http import HttpResponse
+from django.contrib.auth import authenticate, login
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -25,6 +28,41 @@ def index(request):
         'settings': settings,
     }
     return render(request, "index.html", c)
+
+
+def register(request):
+    class RegisterForm(forms.Form):
+        username = forms.CharField(u'Login')
+        password = forms.CharField(u'Password', widget=forms.PasswordInput)
+        repeat_password = forms.CharField(u'Password (again)', widget=forms.PasswordInput)
+
+        def clean(self):
+            cleaned_data = super(RegisterForm, self).clean()
+            username = cleaned_data.get('username')
+            if username and User.objects.filter(username=username).exists():
+                raise forms.ValidationError('User "%s" is already registered' % username)
+            pw = cleaned_data.get('password')
+            pw2 = cleaned_data.get('repeat_password')
+            if pw and pw2 and pw != pw2:
+                raise forms.ValidationError('Passwords do not match')
+            return cleaned_data
+
+    form = RegisterForm(request.POST or None)
+    if form.is_valid():
+        args = dict(
+            username=form.cleaned_data['username'],
+            password=form.cleaned_data['password']
+        )
+
+        User.objects.create_user(**args)
+        auth_user = authenticate(**args)
+        login(request, auth_user)
+        return HttpResponseRedirect(reverse('home'))
+
+    c = {
+        'form': form,
+    }
+    return render(request, "registration/register.html", c)
 
 
 def show_commit_sequence(request, object_id):

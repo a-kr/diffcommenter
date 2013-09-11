@@ -4,7 +4,7 @@
 <h1>Using diffcommenter</h1>
 <ol>
     {% if not user.is_authenticated %}
-    <li><a href="TODO">Register</a> and <a href="{% url 'login'%}">log in</a>.</li>
+    <li><a href="{% url 'register' %}">Register</a> and <a href="{% url 'login'%}">log in</a>.</li>
     {% else %}
     <li>Save the following as <code>~/.diffcommenter</code>:
     <br>

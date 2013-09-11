@@ -22,6 +22,7 @@ urlpatterns = patterns('',
     # Аутентификация
     url(r'^login/$', login, name='login'),
     url(r'^logout/$', logout, {"next_page": "/"}, name='logout'),
+    url(r'^register/$', 'diffapp.views.register', name='register'),
     url(r'^chpasswd/$', password_change, {"template_name": "registration/chpasswd.html"}, name='chpasswd'),
     url(r'^chpasswd/done/$', password_change_done, {"template_name": "registration/chpasswd.html"}, name='chpasswd_done'),
 
