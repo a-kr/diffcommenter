@@ -40,8 +40,6 @@ def show_commit_sequence(request, object_id):
 
     def diff_to_html(self, commit_number, number_in_commit):
         heading = self.filename
-        if self.trac_url:
-            heading = '<a class="trac_link" href="%s">%s</a>' % (self.trac_url, heading)
         print >>outfile, '<h4 class="diff"><span>', heading, '</span>'
         anchor = 'commit%s-file%s' % (commit_number, number_in_commit)
         print >>outfile, u'<a class="anchor-thingy jumps-to-anchor diff-anchor" id="{anchor}" href="#{anchor}">¶</a>'.format(**locals()) , '</h4>'
@@ -120,12 +118,7 @@ def show_commit_sequence(request, object_id):
 
     def commit_to_html(self):
         print >>outfile, '<hr>'
-        if self.trac_url:
-            heading = u'<a class="trac_link" href="%s">%s</a> %s' % (
-                self.trac_url, self.short_hash, self.first_line
-            )
-        else:
-            heading = self.oneline_summary
+        heading = self.oneline_summary
         print >>outfile, '<h3 class="commit"><span>', heading, '</span>'
         anchor = self.make_anchor()
         print >>outfile, u'<a class="anchor-thingy jumps-to-anchor commit-anchor" id="{anchor}" href="#{anchor}">¶</a>'.format(**locals()), '</h3>'
@@ -301,73 +294,6 @@ def export_comments_redmine(request, commit_sequence_id):
             shifted_line = ('    ' + line).rstrip()
             print >>exported, shifted_line
         print >>exported, ''
-        print >>exported, ''
-
-    return HttpResponse(exported.getvalue(), mimetype='text/plain')
-
-
-def export_comments_trac(request, commit_sequence_id):
-    """ Экспорт комментов для помещения в trac """
-    sequence = get_object_or_404(CommitSequence, pk=commit_sequence_id)
-    comments = LineComment.objects.filter(diff__commit__commit_sequence__pk=commit_sequence_id)\
-            .select_related('diff', 'diff__commit').order_by('first_line_anchor')
-
-    exported = StringIO()
-    url = settings.ROOT_URL + sequence.get_edit_url()
-    print >>exported, url
-    print >>exported, ''
-
-    ONE_CHAR_LINE_TYPES = {
-        'old': u'-',
-        'new': u'+',
-    }
-
-    # для каждого диапазона строк выводим только первый, исходный коммент
-    already_commented_line_spans = set()  # of (start_index, end_index)
-
-    for comment in comments:
-        # anchor ~ "commit1-file1-line0x15"
-        # адовый ад
-        comment.line_index_0 = int(comment.first_line_anchor.split('-')[-1][4:], 16)
-
-    comments = sorted(comments, key=lambda c: (c.diff.commit_id, c.diff.pk, c.line_index_0))
-
-    for comment in comments:
-        # anchor ~ "commit1-file1-line0x15"
-        # адовый ад
-        line_index_0 = int(comment.first_line_anchor.split('-')[-1][4:], 16)
-        line_index_1 = int(comment.last_line_anchor.split('-')[-1][4:], 16)
-
-        if (line_index_0, line_index_1) in already_commented_line_spans:
-            continue
-        already_commented_line_spans.add((line_index_0, line_index_1))
-
-        lines = comment.diff.lines[line_index_0 : line_index_1 + 1]
-
-        # в районе какой строки в файле искать этот кусок?
-        old_line_numbers = filter(None, [line.old_li for line in lines])
-        new_line_numbers = filter(None, [line.new_li for line in lines])
-        around_line_no = (new_line_numbers or old_line_numbers or [0])[0]
-
-        text_lines = [line.line for line in lines]
-        rendered_lines = [
-            u'%5s%s %s' % (
-                line.new_li or '',
-                ONE_CHAR_LINE_TYPES.get(line.type, ' '),
-                line.line
-            ) for line in lines
-        ]
-
-        commented_chunk_title = u'%s @ %s' % (comment.diff.filename, around_line_no)
-        print >>exported, ' *', comment.diff.commit.short_hash, commented_chunk_title
-        print >>exported, ''
-        print >>exported, '{{{'
-        for line in rendered_lines:
-            print >>exported, line
-        print >>exported, '}}}'
-        for line in comment.text.split('\n'):
-            shifted_line = ('    ' + line).rstrip()
-            print >>exported, shifted_line
         print >>exported, ''
 
     return HttpResponse(exported.getvalue(), mimetype='text/plain')

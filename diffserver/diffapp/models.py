@@ -55,12 +55,6 @@ class Commit(models.Model):
         return first_line
 
     @property
-    def trac_url(self):
-        return settings.TRAC_REVISION_URL_TEMPLATE % {
-            'sha1': self.sha1
-        }
-
-    @property
     def oneline_summary(self):
         return u'%s %s' % (self.short_hash, self.first_line)
 
@@ -79,17 +73,6 @@ class Diff(models.Model):
     @property
     def head(self):
         return self.head_lines.split('\n')
-
-    def get_trac_url(self, lineno=1):
-        return settings.TRAC_FILE_IN_COMMIT_URL_TEMPLATE % {
-            'filename': self.filename,
-            'sha1': self.commit.sha1,
-            'lineno': lineno,
-        }
-
-    @property
-    def trac_url(self):
-        return self.get_trac_url()
 
     class Line(object):
         """ одна строчка диффа """

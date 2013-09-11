@@ -25,7 +25,7 @@ run: stop collectstatic
 	gunicorn --pid=$(PIDFILE) --error-log=$(ERR_LOG) --log-level=debug -b 128.0.0.1:$(PORT) wsgi:application --daemon
 
 syncdb:
-	python manage.py syncdb
+	python manage.py syncdb --noinput
 
 collectstatic:
 	python manage.py collectstatic --noinput

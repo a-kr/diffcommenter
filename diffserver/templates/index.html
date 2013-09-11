@@ -26,7 +26,7 @@ to-review --diff
 <i># submit only a specific commit</i>
 to-review --only 1ef3c44</pre>
     </li>
-    <li>The tool will print a link to the submitted code inside diffcommenter; for example, <a href="{{ settings.ROOT_URL}}S1/">{{ settings.ROOT_URL }}S1/</a>.</li>
+    <li>The tool will print a link to the submitted code inside diffcommenter; for example, <a href="{% url 'commit_sequence' 1 %}">{{ settings.ROOT_URL }}/S1/</a>.</li>
     {% endif %}
 </ol>
 
@@ -35,8 +35,7 @@ to-review --only 1ef3c44</pre>
 <div>
     <span style="display: inline-block; width: 8em; text-align: right">{{ seq.pk }}.</span>
     {{ seq.added }}
-    <a href="{{ seq.get_edit_url }}">{{ seq.title }}</a>, {{ seq.commits.all|length }} commit(s)
-    {% if seq.user %}, added by <i>{{ seq.user }}</i>{% endif %}
+    <a href="{{ seq.get_edit_url }}">{{ seq.title }}</a>, {{ seq.commits.all|length }} commit(s){% if seq.user %}, added by <i>{{ seq.user }}</i>{% endif %}
 </div>
 {% empty %}
 (no reviews yet)

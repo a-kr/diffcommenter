@@ -9,4 +9,4 @@ from settings import *
 
 # URL of diffcommenter server (displayed on the index page,
 # in the config example)
-ROOT_URL = 'http://localhost:8200/'
+ROOT_URL = 'http://localhost:8200'

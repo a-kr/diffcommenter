@@ -1,0 +1,82 @@
+[
+{
+    "pk": 1, 
+    "model": "diffapp.commit", 
+    "fields": {
+        "commit_sequence": 1, 
+        "sha1": "e55d051a1eeea51856f553d0ae3c8d323e850b3f", 
+        "head_lines": "commit e55d051a1eeea51856f553d0ae3c8d323e850b3f\nAuthor: Alexey Kryuchkov <alexey.kruchkov@gmail.com>\nDate:   Sun Mar 3 11:43:10 2013 +0400\n\n    \u041f\u0430\u0440\u0430\u043c\u0435\u0442\u0440 --only \u0432 \u0441\u043a\u0440\u0438\u043f\u0442\u0435 \u043e\u0442\u043f\u0440\u0430\u0432\u043a\u0438 \u043d\u0430 \u0440\u0435\u0432\u044c\u044e\n"
+    }
+},
+{
+    "pk": 1, 
+    "model": "diffapp.diff", 
+    "fields": {
+        "commit": 1, 
+        "body_lines": "@@ -21,6 +21,6 @@ class Command(BaseCommand):\n         difftext = difftext.decode('utf-8')\n         difflines = difftext.split('\\n')\n\n-        sequence = make_commit_sequence(difflines)\n+        sequence = make_commit_sequence(difflines, title='(stdin)')\n         url = settings.ROOT_URL + sequence.get_edit_url()\n         print url", 
+        "head_lines": "diff --git a/diffserver/diffapp/management/commands/import.py b/diffserver/diffapp/management/commands/import.py\nindex 4f36af6..746156b 100644\n--- a/diffserver/diffapp/management/commands/import.py\n+++ b/diffserver/diffapp/management/commands/import.py", 
+        "filename": "diffserver/diffapp/management/commands/import.py"
+    }
+},
+{
+    "pk": 2, 
+    "model": "diffapp.diff", 
+    "fields": {
+        "commit": 1, 
+        "body_lines": "@@ -3,6 +3,7 @@ import os\n import sys\n from subprocess import Popen, PIPE\n from ConfigParser import ConfigParser\n+from optparse import OptionParser\n import urllib, urllib2\n\n\n@@ -84,6 +85,12 @@ def send_diff_to_server(title, diff):\n     print response.read()\n\n if __name__ == '__main__':\n+    parser = OptionParser()\n+\n+    parser.add_option(\"--only\", \"--commit\", \"-o\", \"-c\", dest=\"only_commit\", default=None, help=u\"send only specified commit to review\")\n+    (options, args) = parser.parse_args()\n+    from_commit = args[0] if len(args) > 0 else None\n+\n     branch = get_current_branch_name()\n\n     base_branch = 'develop'\n@@ -91,6 +98,5 @@ if __name__ == '__main__':\n         base_branch = 'master'\n     # TODO \u0441\u0447\u0438\u0442\u0430\u0442\u044c \u043e\u0432\u0435\u0440\u0440\u0430\u0439\u0434 \u0438\u0437 argparse\n\n-    # TODO from_commit, only_commit \u0438\u0437 argparse\n-    diff = read_diff(base_branch=base_branch)\n+    diff = read_diff(base_branch=base_branch, only_commit=options.only_commit, from_commit=from_commit)\n     send_diff_to_server(branch, diff)\n", 
+        "head_lines": "diff --git a/to-review.py b/to-review.py\nindex dbdef53..3463ba6 100644\n--- a/to-review.py\n+++ b/to-review.py", 
+        "filename": "to-review.py"
+    }
+},
+{
+    "pk": 1, 
+    "model": "auth.user", 
+    "fields": {
+        "username": "da", 
+        "first_name": "", 
+        "last_name": "", 
+        "is_active": true, 
+        "is_superuser": true, 
+        "is_staff": true, 
+        "last_login": "2013-09-11T11:35:24.885Z", 
+        "groups": [], 
+        "user_permissions": [], 
+        "password": "pbkdf2_sha256$10000$G9YeQgMuf25j$PPRUDIS0/glgoGTWB/i0QsZ4FrMykQCFKGgtoY4J+Kk=", 
+        "email": "da@da.com", 
+        "date_joined": "2013-09-11T08:46:54.961Z"
+    }
+},
+{
+    "pk": 1, 
+    "model": "diffapp.commitsequence", 
+    "fields": {
+        "added": "2013-09-11T11:48:54.796Z", 
+        "user": 1, 
+        "title": "feature/example_review"
+    }
+},
+{
+    "pk": 1, 
+    "model": "diffapp.linecomment", 
+    "fields": {
+        "first_line_anchor": "commit1-file0-line0x7", 
+        "added": "2013-09-11T11:58:55.019Z", 
+        "text": "\u041b\u0443\u0447\u0448\u0435 \u0438\u0441\u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u044c logger.info \u0432\u043c\u0435\u0441\u0442\u043e print", 
+        "user": 1, 
+        "diff": 1, 
+        "last_line_anchor": "commit1-file0-line0x7"
+    }
+},
+{
+    "pk": 2, 
+    "model": "diffapp.linecomment", 
+    "fields": {
+        "first_line_anchor": "commit1-file1-line0xe", 
+        "added": "2013-09-11T11:59:17.660Z", 
+        "text": "\u0417\u0430\u0431\u044b\u0442\u043e action=\"store_true\"?", 
+        "user": 1, 
+        "diff": 2, 
+        "last_line_anchor": "commit1-file1-line0xe"
+    }
+}
+]
