@@ -10,6 +10,7 @@ Requirements
 * Python 2.7
 * Django 1.5
 * PostgreSQL 9.1
+* (optionally) gunicorn
 
 Installation
 ------------
@@ -30,13 +31,23 @@ cd diffcommenter/diffserver
 make syncdb
 make test
 ```
+Running the development server
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Run the development server:
 ```
-make run
+make runserver
 ```
 
 Open http://localhost:8200/ in your browser and see if it works.
+
+Running with gunicorn
+~~~~~~~~~~~~~~~~~~~~~
+```
+make run
+make stop
+```
+
+The server will run on port 8200.
 
 
 

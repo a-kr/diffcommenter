@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.contrib.auth.views import login, logout
 from django.contrib.auth.views import password_change, password_change_done
@@ -23,6 +24,9 @@ urlpatterns = patterns('',
     url(r'^logout/$', logout, {"next_page": "/"}, name='logout'),
     url(r'^chpasswd/$', password_change, {"template_name": "registration/chpasswd.html"}, name='chpasswd'),
     url(r'^chpasswd/done/$', password_change_done, {"template_name": "registration/chpasswd.html"}, name='chpasswd_done'),
+
+    (r'^static/(?P<path>.*)$', 'django.views.static.serve',
+        {'document_root': settings.STATIC_ROOT}),
 
     # url(r'^diffserver/', include('diffserver.foo.urls')),
 
