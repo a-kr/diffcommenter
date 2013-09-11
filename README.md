@@ -31,8 +31,8 @@ cd diffcommenter/diffserver
 make syncdb
 make test
 ```
-Running the development server
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+### Running the development server
 
 ```
 make runserver
@@ -40,8 +40,8 @@ make runserver
 
 Open http://localhost:8200/ in your browser and see if it works.
 
-Running with gunicorn
-~~~~~~~~~~~~~~~~~~~~~
+### Running with gunicorn
+
 ```
 make run
 make stop
