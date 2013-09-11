@@ -53,3 +53,15 @@ body {
     margin-left: 4em;
     margin-right: 4em;
 }
+
+pre.code {
+    background-color: #eeeeee;
+    border: solid 1px #aaaaaa;
+    border-radius: 5px;
+    padding: 3px;
+    width: 400px;
+}
+
+pre.code i {
+    color: gray;
+}

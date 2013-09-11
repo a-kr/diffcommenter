@@ -22,6 +22,7 @@ def index(request):
     sequences = CommitSequence.objects.order_by('-id').prefetch_related('commits')[:LAST_N]
     c = {
         'sequences': sequences,
+        'settings': settings,
     }
     return render(request, "index.html", c)
 

@@ -1,7 +1,7 @@
 .PHONY: run syncdb test shell
 
 export PYTHONPATH:=$(shell pwd)
-export DJANGO_SETTINGS_MODULE:=settings
+export DJANGO_SETTINGS_MODULE:=settings_local
 
 PORT=8200
 ERR_LOG=ds.errors.log
@@ -21,12 +21,14 @@ stop:
 		sleep 3; \
 	fi;
 
-run: stop
-	python manage.py collectstatic --noinput
-	gunicorn --pid=$(PIDFILE) --error-log=$(ERR_LOG) --log-level=debug -b 127.0.0.1:$(PORT) wsgi:application --daemon
+run: stop collectstatic
+	gunicorn --pid=$(PIDFILE) --error-log=$(ERR_LOG) --log-level=debug -b 128.0.0.1:$(PORT) wsgi:application --daemon
 
 syncdb:
 	python manage.py syncdb
+
+collectstatic:
+	python manage.py collectstatic --noinput
 
 test:
 	python manage.py test diffapp

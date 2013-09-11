@@ -28,6 +28,7 @@ Clone the repository and initalize the database structure:
 cd ~
 git clone https://github.com/Babazka/diffcommenter.git
 cd diffcommenter/diffserver
+cp settings_local.example.py settings_local.py
 make syncdb
 make test
 ```
@@ -48,6 +49,11 @@ make stop
 ```
 
 The server will run on port 8200.
+
+Usage
+-----
+
+Start the diffcommenter server (see above), open the main page in browser and follow the instructions displayed there.
 
 
 
