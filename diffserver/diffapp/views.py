@@ -79,7 +79,7 @@ def show_commit_sequence(request, object_id):
     def diff_to_html(self, commit_number, number_in_commit):
         heading = self.filename
         print >>outfile, '<h4 class="diff"><span>', heading, '</span>'
-        anchor = 'commit%s-file%s' % (commit_number, number_in_commit)
+        anchor = self.make_anchor(number_in_commit)
         print >>outfile, u'<a class="anchor-thingy jumps-to-anchor diff-anchor" id="{anchor}" href="#{anchor}">¶</a>'.format(**locals()) , '</h4>'
         print >>outfile, '<pre>' + '\n'.join(self.head) + '</pre>'
         print >>outfile, '''<table data-diff-pk="{self.pk}" width="100%" cellspacing="0" class="difftable">
@@ -161,6 +161,12 @@ def show_commit_sequence(request, object_id):
         anchor = self.make_anchor()
         print >>outfile, u'<a class="anchor-thingy jumps-to-anchor commit-anchor" id="{anchor}" href="#{anchor}">¶</a>'.format(**locals()), '</h3>'
         print >>outfile, '<pre>' + '\n'.join(self.head).replace('<', '&lt;') + '</pre>'
+
+        print >>outfile, u'<ul class="commit-file-list">'
+        for i, diff in enumerate(self.diffs.all()):
+            anchor = diff.make_anchor(i)
+            print >>outfile, u'<li><a class="anchor-thingy jumps-to-anchor toc_link" href="#{anchor}">{diff.filename}</a></li>'.format(**locals())
+        print >>outfile, u'</ul>'
 
         for i, diff in enumerate(self.diffs.all()):
             diff_to_html(diff, self.pk, i)

@@ -74,6 +74,10 @@ class Diff(models.Model):
     def head(self):
         return self.head_lines.split('\n')
 
+    def make_anchor(self, number_in_commit):
+        anchor = 'commit%s-file%s' % (self.commit_id, number_in_commit)
+        return anchor
+
     class Line(object):
         """ одна строчка диффа """
         __slots__ = ['old_li', 'new_li', 'type', 'line']
