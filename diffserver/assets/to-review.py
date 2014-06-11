@@ -70,7 +70,7 @@ def read_diff(only_commit=None, from_commit=None, base_branch='develop', single_
     if single_diff:
         cmd = "git diff "
     else:
-        cmd = "git show "
+        cmd = "git show -U15 "
 
     if only_commit:
         process = Popen(cmd + "%s" % only_commit, shell=True, stdout=PIPE)
@@ -89,6 +89,32 @@ def read_diff(only_commit=None, from_commit=None, base_branch='develop', single_
         out = DUMMY_COMMIT_HEADER + out
 
     return out
+
+
+def make_fake_diff_from_files(filenames):
+    """ Соорудить что-то похожее на вывод diff, если бы добавили несколько новых файлов """
+    difflines = []
+    difflines.extend([
+        "commit 0000000000000000000000000000000000000000",
+        "Author: Committer Guy <commiter.guy@gmail.com>",
+        "Date:   Tue Feb 19 13:46:55 2013 +0400",
+        "",
+        "    Fake commit",
+        "",
+    ])
+
+    for filename in filenames:
+        file_lines = ['+' + line.rstrip('\n') for line in open(filename).readlines()]
+        difflines.extend([
+            "diff --git a/{} b/{}".format(filename, filename),
+            "new file mode 100644",
+            "index 0000000..1111111",
+            "--- /dev/null",
+            "+++ a/{}".format(filename),
+            "@@ -0,0 +1,{} @@".format(len(file_lines)),
+        ])
+        difflines.extend(file_lines)
+    return '\n'.join(difflines)
 
 
 def send_diff_to_server(title, diff):
@@ -113,16 +139,23 @@ if __name__ == '__main__':
     parser.add_option("--branch", "-b", dest="branch", default=None, help=u"use this branch instead of HEAD")
     parser.add_option("--only", "--commit", "-o", "-c", dest="only_commit", default=None, help=u"send only specified commit to review")
     parser.add_option("--diff", "-d", dest="single_diff", default=None, action="store_true", help=u"collapse all commits in range into a single diff")
+    parser.add_option("--file", "-f", dest="review_files", default=None, action="append", help=u"review an entire single file instead of a git diff")
     (options, args) = parser.parse_args()
     from_commit = args[0] if len(args) > 0 else None
 
-    branch = options.branch or get_current_branch_name()
-    head = options.branch or 'HEAD'
+    if options.review_files:
+        branch = ', '.join(options.review_files)
+        if len(branch) > 50:
+            branch = branch[:47] + "..."
+        diff = make_fake_diff_from_files(options.review_files)
+    else:
+        branch = options.branch or get_current_branch_name()
+        head = options.branch or 'HEAD'
 
-    base_branch = 'origin/develop'
-    if branch.startswith('hotfix/') or branch.startswith('origin/hotfix/'):
-        base_branch = 'origin/master'
-    # TODO считать оверрайд из argparse
+        base_branch = 'origin/develop'
+        if branch.startswith('hotfix/') or branch.startswith('origin/hotfix/'):
+            base_branch = 'origin/master'
+        # TODO считать оверрайд из argparse
 
-    diff = read_diff(base_branch=base_branch, only_commit=options.only_commit, from_commit=from_commit, single_diff=options.single_diff, head=head)
+        diff = read_diff(base_branch=base_branch, only_commit=options.only_commit, from_commit=from_commit, single_diff=options.single_diff, head=head)
     send_diff_to_server(branch, diff)

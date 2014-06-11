@@ -24,7 +24,10 @@ to-review --branch origin/feature/mega_feature
 <i># send all commits as a single diff</i>
 to-review --diff
 <i># submit only a specific commit</i>
-to-review --only 1ef3c44</pre>
+to-review --only 1ef3c44
+<i># submit several entire files, not diffs</i>
+to-review -f file1.txt -f file2.txt</pre>
+Last option does not require the files to be inside a Git repository.
     </li>
     <li>The tool will print a link to the submitted code inside diffcommenter; for example, <a href="{% url 'commit_sequence' 1 %}">{{ settings.ROOT_URL }}/S1/</a>.</li>
     {% endif %}
