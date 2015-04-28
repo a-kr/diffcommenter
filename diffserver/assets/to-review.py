@@ -55,7 +55,7 @@ Date:   Thu Jan 1 00:00:01 2000 +0400
 """
 
 
-def read_diff(only_commit=None, from_commit=None, base_branch='develop', single_diff=False, head='HEAD'):
+def read_diff(only_commit=None, from_commit=None, base_branch='develop', single_diff=False, head='HEAD', diff_context=15):
     """ Считывает описание набора коммитов в ветке (git show). Возвращает строку.
 
         :param only_commit: вернуть описание только коммита с этим хешом
@@ -70,7 +70,7 @@ def read_diff(only_commit=None, from_commit=None, base_branch='develop', single_
     if single_diff:
         cmd = "git diff "
     else:
-        cmd = "git show -U15 "
+        cmd = "git show -U%s " % diff_context
 
     if only_commit:
         process = Popen(cmd + "%s" % only_commit, shell=True, stdout=PIPE)
@@ -140,6 +140,7 @@ if __name__ == '__main__':
     parser.add_option("--only", "--commit", "-o", "-c", dest="only_commit", default=None, help=u"send only specified commit to review")
     parser.add_option("--diff", "-d", dest="single_diff", default=None, action="store_true", help=u"collapse all commits in range into a single diff")
     parser.add_option("--file", "-f", dest="review_files", default=None, action="append", help=u"review an entire single file instead of a git diff")
+    parser.add_option("-C", dest="diff_context", default="15", help=u"number of lines for diff context")
     (options, args) = parser.parse_args()
     from_commit = args[0] if len(args) > 0 else None
 
@@ -152,10 +153,17 @@ if __name__ == '__main__':
         branch = options.branch or get_current_branch_name()
         head = options.branch or 'HEAD'
 
-        base_branch = 'origin/develop'
-        if branch.startswith('hotfix/') or branch.startswith('origin/hotfix/'):
-            base_branch = 'origin/master'
+        base_branch = 'origin/master'
+        if branch.startswith('feature/') or branch.startswith('origin/feature/'):
+            base_branch = 'origin/develop'
         # TODO считать оверрайд из argparse
 
-        diff = read_diff(base_branch=base_branch, only_commit=options.only_commit, from_commit=from_commit, single_diff=options.single_diff, head=head)
+        diff = read_diff(
+            base_branch=base_branch,
+            only_commit=options.only_commit,
+            from_commit=from_commit,
+            single_diff=options.single_diff,
+            head=head,
+            diff_context=options.diff_context,
+        )
     send_diff_to_server(branch, diff)
