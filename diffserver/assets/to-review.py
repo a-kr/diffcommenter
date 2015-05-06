@@ -136,8 +136,13 @@ def send_diff_to_server(title, diff):
         data['password'] = raw_input("Enter Diffcommenter password for %s:" % data['login'])
 
     url = API_URL % config.get("Diffcommenter", "url")
-    response = urllib2.urlopen(url, urllib.urlencode(data))
-    print response.read()
+    try:
+        print urllib2.urlopen(url, urllib.urlencode(data)).read()
+    except urllib2.HTTPError as err:
+        code = err.getcode()
+        print 'HTTP Error code: ', code
+        if code == 400:
+            print err.read()
 
 if __name__ == '__main__':
     parser = OptionParser()

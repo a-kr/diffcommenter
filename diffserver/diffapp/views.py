@@ -7,11 +7,12 @@ import os
 import re
 
 from django import forms
-from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -354,7 +355,7 @@ def submit_diff_api(request):
     password = request.POST.get('password')
     client_version = request.POST.get('client_version')
     if client_version != settings.CLIENT_VERSION:
-        return HttpResponse(
+        return HttpResponseBadRequest(
             'Version of your client ({0}) is outdated. '
             'Curent version is {1}. '
             'Redownload to-review.py. \n\n'
