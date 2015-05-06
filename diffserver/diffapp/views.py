@@ -352,6 +352,18 @@ def submit_diff_api(request):
     diff = request.POST.get('diff')
     login = request.POST.get('login')
     password = request.POST.get('password')
+    client_version = request.POST.get('client_version')
+    if client_version != settings.CLIENT_VERSION:
+        return HttpResponse(
+            'Version of your client ({0}) is outdated. '
+            'Curent version is {1}. '
+            'Redownload to-review.py. \n\n'
+            '    wget "{2}"'.format(
+                client_version,
+                settings.CLIENT_VERSION,
+                request.build_absolute_uri(reverse('download_to_review'))
+            )
+        )
     if not all((title, diff, login, password)):
         return HttpResponse('Not all parameters are specified (title, diff, login, password - something was empty)', code=400)
 
