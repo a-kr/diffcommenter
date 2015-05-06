@@ -2,6 +2,7 @@
 # Django settings for diffserver project.
 import os
 
+
 def self_dir(*args):
     return os.path.abspath(os.path.join(os.path.dirname(__file__), *args))
 
@@ -59,7 +60,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 SECRET_KEY = '7#-&amp;((&amp;s05-^$d*s8q2e014&amp;gj6xhgyq3hxa=ivlsjk2*-utun'
@@ -67,7 +68,7 @@ SECRET_KEY = '7#-&amp;((&amp;s05-^$d*s8q2e014&amp;gj6xhgyq3hxa=ivlsjk2*-utun'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    # 'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -144,3 +145,6 @@ LOGGING = {
         },
     }
 }
+
+# To force user update change to something new
+CLIENT_VERSION = '1.0'

@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from django.conf import settings
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 from django.contrib.auth.views import login, logout
 from django.contrib.auth.views import password_change, password_change_done
 
@@ -10,7 +10,6 @@ from django.contrib.auth.views import password_change, password_change_done
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
     url(r'^$', 'diffapp.views.index', name='home'),
     url(r'^S(\d+)/$', 'diffapp.views.show_commit_sequence', name='commit_sequence'),
     url(r'^S(\d+)/new_comment$', 'diffapp.views.ajax_new_comment', name='ajax_new_comment'),
@@ -25,6 +24,12 @@ urlpatterns = patterns('',
     url(r'^register/$', 'diffapp.views.register', name='register'),
     url(r'^chpasswd/$', password_change, {"template_name": "registration/chpasswd.html"}, name='chpasswd'),
     url(r'^chpasswd/done/$', password_change_done, {"template_name": "registration/chpasswd.html"}, name='chpasswd_done'),
+
+    url(
+        r'^get/to-review.py$',
+        'diffapp.views.download_to_review',
+        name='download_to_review'
+    ),
 
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': settings.STATIC_ROOT}),
