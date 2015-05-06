@@ -3,7 +3,7 @@
 
 <h1>Using diffcommenter</h1>
 <ol>
-    {% if not user.is_authenticated %}
+    {% if user.is_anonymous %}
     <li><a href="{% url 'register' %}">Register</a> and <a href="{% url 'login'%}">log in</a>.</li>
     {% else %}
     <li>Save the following as <code>~/.diffcommenter</code>:
@@ -13,7 +13,7 @@ url = {{ settings.ROOT_URL }}
 login = {{ user.username }}
 password = your_password_here</pre>
     </li>
-    <li>Download <a href="{{ STATIC_URL }}to-review.py">to-review.py</a> and save it in your home directory.</li>
+    <li>Download <a href="{% url "download_to_review" %}">to-review.py</a> and save it in your home directory.</li>
     <li>In your <code>.bashrc</code> add an alias:
 <pre class="code">alias to-review="python ~/to-review.py"</pre>
     <li>To submit code to diffcommenter, use the <code>to-review</code> tool from inside your repository, like so:

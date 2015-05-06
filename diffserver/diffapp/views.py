@@ -1,16 +1,18 @@
 # coding: utf-8
 
-import keyword
-import re
-from collections import defaultdict
 from StringIO import StringIO
+from collections import defaultdict
+import keyword
+import os
+import re
 
 from django import forms
-from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
@@ -70,9 +72,11 @@ def show_commit_sequence(request, object_id):
     """
     outfile = StringIO()
     try:
-        commit_sequence = CommitSequence.objects.filter(pk=object_id)\
-                .prefetch_related('commits', 'commits__diffs', 'commits__diffs__comments')\
-                [:1][0]
+        commit_sequence = CommitSequence.objects.filter(
+            pk=object_id
+        ).prefetch_related(
+            'commits', 'commits__diffs', 'commits__diffs__comments'
+        )[:1][0]
     except IndexError:
         return HttpResponse(code=404)
 
@@ -80,7 +84,7 @@ def show_commit_sequence(request, object_id):
         heading = self.filename
         print >>outfile, '<h4 class="diff"><span>', heading, '</span>'
         anchor = self.make_anchor(number_in_commit)
-        print >>outfile, u'<a class="anchor-thingy jumps-to-anchor diff-anchor" id="{anchor}" href="#{anchor}">¶</a>'.format(**locals()) , '</h4>'
+        print >>outfile, u'<a class="anchor-thingy jumps-to-anchor diff-anchor" id="{anchor}" href="#{anchor}">¶</a>'.format(**locals()), '</h4>'
         print >>outfile, '<pre>' + '\n'.join(self.head) + '</pre>'
         print >>outfile, '''<table data-diff-pk="{self.pk}" width="100%" cellspacing="0" class="difftable">
         <tr>
@@ -311,14 +315,13 @@ def export_comments_redmine(request, commit_sequence_id):
         #    continue
         already_commented_line_spans.add((line_index_0, line_index_1))
 
-        lines = comment.diff.lines[line_index_0 : line_index_1 + 1]
+        lines = comment.diff.lines[line_index_0: line_index_1 + 1]
 
         # в районе какой строки в файле искать этот кусок?
         old_line_numbers = filter(None, [line.old_li for line in lines])
         new_line_numbers = filter(None, [line.new_li for line in lines])
         around_line_no = (new_line_numbers or old_line_numbers or [0])[0]
 
-        text_lines = [line.line for line in lines]
         rendered_lines = [
             u'%5s%s %s' % (
                 line.new_li or '',
@@ -350,6 +353,18 @@ def submit_diff_api(request):
     diff = request.POST.get('diff')
     login = request.POST.get('login')
     password = request.POST.get('password')
+    client_version = request.POST.get('client_version')
+    if client_version != settings.CLIENT_VERSION:
+        return HttpResponseBadRequest(
+            'Version of your client ({0}) is outdated. '
+            'Curent version is {1}. '
+            'Redownload to-review.py. \n\n'
+            '    wget "{2}"'.format(
+                client_version,
+                settings.CLIENT_VERSION,
+                request.build_absolute_uri(reverse('download_to_review'))
+            )
+        )
     if not all((title, diff, login, password)):
         return HttpResponse('Not all parameters are specified (title, diff, login, password - something was empty)', code=400)
 
@@ -360,7 +375,19 @@ def submit_diff_api(request):
     diff_lines = diff.split('\n')
 
     sequence = make_commit_sequence(diff_lines, user=user, title=title)
-    url = settings.ROOT_URL + sequence.get_edit_url()
+    url = request.build_absolute_uri(sequence.get_edit_url())
     return HttpResponse(url)
 
 
+def download_to_review(request):
+    "Download to-review.py and embed current client version in it"
+    to_review_path = os.path.join(settings.STATIC_ROOT, 'to-review.py')
+    with open(to_review_path, 'r') as f:
+        to_review = f.read()
+    to_review = to_review.replace(
+        'CLIENT_VERSION = None',
+        'CLIENT_VERSION = "{0}"'.format(settings.CLIENT_VERSION)
+    )
+    response = HttpResponse(to_review)
+    response['content-type'] = 'application/python'
+    return response

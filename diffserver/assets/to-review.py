@@ -1,10 +1,15 @@
 # coding: utf-8
-import os
-import sys
-from subprocess import Popen, PIPE
+
 from ConfigParser import ConfigParser
 from optparse import OptionParser
-import urllib, urllib2
+from subprocess import Popen, PIPE
+import os
+import sys
+import urllib
+import urllib2
+
+
+CLIENT_VERSION = None
 
 
 CONFIG_FILE_NAME = '.diffcommenter'
@@ -41,7 +46,7 @@ def get_current_branch_name():
     out = out.split('\n')[0].strip()
     # out ~ "9f9dd42e860c7696a58bd0810cc241e058cfab4e refs/heads/feature/my_mega_feature_#13538"
 
-    sha1, ref  = out.strip().split(' ', 1)
+    sha1, ref = out.strip().split(' ', 1)
     ref_parts = ref.split('/', 2)
     return ref_parts[2]
 
@@ -125,13 +130,19 @@ def send_diff_to_server(title, diff):
         'diff': diff,
         'login': config.get("Diffcommenter", "login"),
         'password': config.get("Diffcommenter", "password"),
+        'client_version': str(CLIENT_VERSION),
     }
     if not data['password']:
         data['password'] = raw_input("Enter Diffcommenter password for %s:" % data['login'])
 
     url = API_URL % config.get("Diffcommenter", "url")
-    response = urllib2.urlopen(url, urllib.urlencode(data))
-    print response.read()
+    try:
+        print urllib2.urlopen(url, urllib.urlencode(data)).read()
+    except urllib2.HTTPError as err:
+        code = err.getcode()
+        print 'HTTP Error code: ', code
+        if code == 400:
+            print err.read()
 
 if __name__ == '__main__':
     parser = OptionParser()
