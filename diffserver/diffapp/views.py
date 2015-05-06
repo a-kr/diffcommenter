@@ -374,7 +374,7 @@ def submit_diff_api(request):
     diff_lines = diff.split('\n')
 
     sequence = make_commit_sequence(diff_lines, user=user, title=title)
-    url = settings.ROOT_URL + sequence.get_edit_url()
+    url = request.build_absolute_uri(sequence.get_edit_url())
     return HttpResponse(url)
 
 
