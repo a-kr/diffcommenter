@@ -357,7 +357,7 @@ def submit_diff_api(request):
     if client_version != settings.CLIENT_VERSION:
         return HttpResponseBadRequest(
             'Version of your client ({0}) is outdated. '
-            'Curent version is {1}. '
+            'Current version is {1}. '
             'Redownload to-review.py. \n\n'
             '    wget "{2}"'.format(
                 client_version,
