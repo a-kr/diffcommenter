@@ -110,12 +110,13 @@ class Diff(models.Model):
             diff[i] = diff[i].replace('\t', '    ').rstrip() or ' '
             type = diff[i][0]
             if type == '@':
-                m = re.match(r'^@@ -(\d+),\d+ \+(\d+),\d+ @@.*$', diff[i])
+                m = re.match(r'^@@ -(\d+),\d+ \+(\d+),\d+ @@(.*)$', diff[i])
                 if m:
                     r1_li = int(m.groups()[0])
                     r2_li = int(m.groups()[1])
+
                     if not (r1_li == 1 or r2_li == 1):
-                        diff_t.append((None, None, 'skip', '...'))
+                        diff_t.append((None, None, 'skip', diff[i]))
             elif type == ' ':
                 diff_t.append((r1_li, r2_li, 'same', diff[i][1:]))
                 r1_li = r1_li + 1

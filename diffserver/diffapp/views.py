@@ -129,7 +129,7 @@ def show_commit_sequence(request, object_id):
 
             if line.type == 'skip':
                 row = u'''<td class="lno" colspan="2" width="center">...</td>'''\
-                      u'''<td class="line" style="{this_row_top_border}">&nbsp;'''.format(**locals())
+                      u'''<td class="line" style="{this_row_top_border}; color: blue "><pre>{fmt_line}</pre>'''.format(**locals())
             elif line.type == 'same':
                 row = u'''<td class="lno" ><a {anchor_insides}>{line.old_li}</a></td>'''\
                       u'''<td class="lno" ><a {anchor_insides}>{line.new_li}</a></td>'''\
