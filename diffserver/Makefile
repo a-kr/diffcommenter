@@ -9,7 +9,7 @@ PIDFILE=ds.pid
 
 
 
-runserver:
+runserver: collectstatic
 	python manage.py runserver $(PORT)
 
 stop:
