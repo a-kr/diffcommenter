@@ -72,6 +72,7 @@ class DiffImportTest(TestCase):
     """ тесты на импорт коммитов из файла """
 
     def test_import_commit_sequence(self):
+        CommitSequence.objects.all().delete()
         make_commit_sequence(EXAMPLE_GIT_SHOW_OUTPUT)
 
         self.assertEqual(CommitSequence.objects.count(), 1)
