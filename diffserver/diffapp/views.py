@@ -283,7 +283,7 @@ def export_comments_redmine(request, commit_sequence_id):
     """ Экспорт комментов для помещения в Redmine """
     sequence = get_object_or_404(CommitSequence, pk=commit_sequence_id)
     comments = LineComment.objects.filter(diff__commit__commit_sequence__pk=commit_sequence_id)\
-            .select_related('diff', 'diff__commit').order_by('first_line_anchor')
+            .select_related('diff', 'diff__commit').order_by('first_line_anchor', 'added')
 
     exported = StringIO()
     url = settings.ROOT_URL + sequence.get_edit_url()
