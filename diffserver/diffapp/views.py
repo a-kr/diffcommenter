@@ -78,7 +78,7 @@ def show_commit_sequence(request, object_id):
             'commits', 'commits__diffs', 'commits__diffs__comments'
         )[:1][0]
     except IndexError:
-        return HttpResponse(code=404)
+        return HttpResponse(status=404)
 
     def diff_to_html(self, commit_number, number_in_commit):
         heading = self.filename
@@ -366,11 +366,11 @@ def submit_diff_api(request):
             )
         )
     if not all((title, diff, login, password)):
-        return HttpResponse('Not all parameters are specified (title, diff, login, password - something was empty)', code=400)
+        return HttpResponse('Not all parameters are specified (title, diff, login, password - something was empty)', status=400)
 
     user = get_object_or_404(User, username=login)
     if not user.check_password(password):
-        return HttpResponse('Password is incorrect', code=403)
+        return HttpResponse('Password is incorrect', status=403)
 
     diff_lines = diff.split('\n')
 
