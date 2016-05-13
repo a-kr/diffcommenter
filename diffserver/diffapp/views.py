@@ -82,7 +82,7 @@ def show_commit_sequence(request, object_id):
 
     def diff_to_html(self, commit_number, number_in_commit):
         heading = self.filename
-        print >>outfile, '<h3 class="commit"><span>', heading.replace('<', '&lt;'), '</span>'
+        print >>outfile, '<h4 class="diff"><span>', heading.replace('<', '&lt;'), '</span>'
         anchor = self.make_anchor(number_in_commit)
         print >>outfile, u'<a class="anchor-thingy jumps-to-anchor diff-anchor" id="{anchor}" href="#{anchor}">¶</a>'.format(**locals()), '</h4>'
         print >>outfile, '<pre>' + '\n'.join(self.head) + '</pre>'
