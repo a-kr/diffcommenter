@@ -38,6 +38,8 @@ USE_L10N = True
 
 SESSION_COOKIE_NAME = 'diffcommenter-sessionid'
 
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 365 * 10
+
 USE_TZ = True
 
 MEDIA_ROOT = ''
