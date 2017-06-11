@@ -1,13 +1,20 @@
 # coding: utf-8
-
-from ConfigParser import ConfigParser
+from __future__ import print_function
 from optparse import OptionParser
 from subprocess import Popen, PIPE
 import os
 import sys
-import urllib
-import urllib2
 
+# If python3
+if sys.version_info[0] < 3:
+    from urllib2 import urlopen, HTTPError
+    from urllib import urlencode
+    from ConfigParser import ConfigParser
+else:
+    from configparser import ConfigParser
+    from urllib.error import HTTPError
+    from urllib.request import urlopen
+    from urllib.parse import urlencode
 
 CLIENT_VERSION = None
 
@@ -17,7 +24,7 @@ API_URL = '%s/submit-diff-api/'
 
 
 def die(post_death_note):
-    print >>sys.stderr, post_death_note
+    print(post_death_note, file=sys.stderr)
     exit(1)
 
 
@@ -43,7 +50,7 @@ def get_current_branch_name():
     out, err = process.communicate()
     if process.returncode != 0:
         die('`git branch` failed')
-    out = out.split('\n')[0].strip()
+    out = out.decode().split('\n')[0].strip()
     # out ~ "9f9dd42e860c7696a58bd0810cc241e058cfab4e refs/heads/feature/my_mega_feature_#13538"
 
     sha1, ref = out.strip().split(' ', 1)
@@ -124,7 +131,9 @@ def make_fake_diff_from_files(filenames):
 
 def send_diff_to_server(title, diff):
     """ отправка диффа на сервер """
-    diff = diff.encode('utf-8') if isinstance(diff, unicode) else diff
+    if sys.version_info[0] < 3:
+        diff = diff.encode('utf-8') if isinstance(diff, unicode) else diff
+
     data = {
         'title': title,
         'diff': diff,
@@ -133,16 +142,22 @@ def send_diff_to_server(title, diff):
         'client_version': str(CLIENT_VERSION),
     }
     if not data['password']:
-        data['password'] = raw_input("Enter Diffcommenter password for %s:" % data['login'])
+        if sys.version_info[0] < 3:
+            data['password'] = raw_input("Enter Diffcommenter password for %s:" % data['login'])
+        else:
+            data['password'] = input("Enter Diffcommenter password for %s:" % data['login'])
 
     url = API_URL % config.get("Diffcommenter", "url")
     try:
-        print urllib2.urlopen(url, urllib.urlencode(data)).read()
-    except urllib2.HTTPError as err:
+        if sys.version_info[0] < 3:
+            print(urlopen(url, urlencode(data)).read())
+        else:
+            print(urlopen(url, urlencode(data).encode("utf-8")).read().decode('utf-8'))
+    except HTTPError as err:
         code = err.getcode()
-        print 'HTTP Error code: ', code
+        print('HTTP Error code: ', code)
         if code == 400:
-            print err.read()
+            print(err.read())
 
 if __name__ == '__main__':
     parser = OptionParser()
