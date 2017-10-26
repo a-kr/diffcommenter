@@ -180,8 +180,6 @@ if __name__ == '__main__':
         head = options.branch or 'HEAD'
 
         base_branch = 'origin/master'
-        if branch.startswith('feature/') or branch.startswith('origin/feature/'):
-            base_branch = 'origin/develop'
         # TODO считать оверрайд из argparse
 
         diff = read_diff(
