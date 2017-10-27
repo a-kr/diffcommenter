@@ -1,4 +1,34 @@
 # coding: utf-8
+"""
+
+Submit a sequence of git commits to diffcommenter (code review tool).
+
+        to-review
+
+            submits commits from current git branch, starting from first
+            commit not present in `master` branch
+
+        to-review 1ef3c44
+
+            submits commit sequence from 1ef3c44 (not included) to HEAD
+
+        to-review --branch origin/feature/mega_feature
+
+            submits commits from specific branch
+
+        to-review --diff
+
+            submits all commits as a single diff
+
+        to-review --only 1ef3c44
+
+            submits only a single specified commit
+
+        to-review -f file1.txt -f file2.txt
+
+            submits several entire files, not diffs
+            (does not require the files to be inside a Git repository)
+"""
 from __future__ import print_function
 from optparse import OptionParser
 from subprocess import Popen, PIPE
@@ -160,7 +190,7 @@ def send_diff_to_server(title, diff):
             print(err.read())
 
 if __name__ == '__main__':
-    parser = OptionParser()
+    parser = OptionParser(usage=__doc__)
 
     parser.add_option("--branch", "-b", dest="branch", default=None, help=u"use this branch instead of HEAD")
     parser.add_option("--only", "--commit", "-o", "-c", dest="only_commit", default=None, help=u"send only specified commit to review")
