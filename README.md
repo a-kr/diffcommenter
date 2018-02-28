@@ -23,11 +23,11 @@ sudo -u postgres createuser -s da
 createdb -U da dc
 ```
 
-Clone the repository and initalize the database structure:
+Clone the repository and initialize the database structure:
 
 ```
 cd ~
-git clone https://github.com/Babazka/diffcommenter.git
+git clone https://github.com/a-kr/diffcommenter.git
 cd diffcommenter/diffserver
 cp settings_local.example.py settings_local.py
 make syncdb
@@ -56,6 +56,4 @@ Usage
 
 Start the diffcommenter server (see above), open the main page in browser and follow the instructions displayed there.
 
-
-
-
+Default user: `da:111111`

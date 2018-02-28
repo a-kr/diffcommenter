@@ -1,3 +1,4 @@
 *.pyc
 *.swp
 *.swo
+diffserver/settings_local.py
