@@ -1,7 +1,9 @@
 # coding: utf-8
 from django.test import TestCase
+
 from diffapp.diffimport import make_commit_sequence, make_diff
 from diffapp.models import CommitSequence, Commit, Diff
+
 
 EXAMPLE_GIT_SHOW_OUTPUT = u"""commit c28e535f1024e3b22ec05574aa2287aa5338e3dc
 Author: Vasya Pupkin <pupkin.vasily@gmail.com>
@@ -66,7 +68,11 @@ index 0000000..d62e9f6
 @@ -0,0 +1,2 @@
 +if x = y:
 +    return z
+diff --git a/test.file b/test.file
+new file mode 100644
+index 0000000..e69de29
 """
+
 
 class DiffImportTest(TestCase):
     """ тесты на импорт коммитов из файла """
@@ -82,8 +88,9 @@ class DiffImportTest(TestCase):
 
         self.assertEquals(commits[0].sha1, 'f60d7b4858faa696c0581f47ccc81736f9df3ded')
         diffs = commits[0].diffs.all()[:]
-        self.assertEquals(len(diffs), 1)
+        self.assertEquals(len(diffs), 2)
         self.assertEquals(diffs[0].filename, 'a.py')
+        self.assertEquals(diffs[1].filename, 'test.file')
 
         self.assertEquals(commits[1].sha1, '242ce960af361fd307ca2fe61bc0a71c29c28394')
         diffs = commits[1].diffs.all()[:]

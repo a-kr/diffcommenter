@@ -95,20 +95,23 @@ def make_diff(lines, commit=None):
     head = []
 
     def strip_phony_filename_prefixes(filename):
-        if filename.startswith('a/') or filename.startswith('b/'):
+        if filename.startswith('a/'):
             return filename[len('a/'):]
+        if filename.startswith('b/'):
+            return filename[len('b/'):]
         return filename
 
     i = 0
     while i < len(lines):
         head.append(lines[i].rstrip())
-        if lines[i].startswith('--- '):
-            diff.filename = strip_phony_filename_prefixes(lines[i].split(' ', 1)[1])
+
+        if lines[i].startswith('diff --git'):
+            if not diff.filename:
+                diff.filename = strip_phony_filename_prefixes(lines[i].split(' ')[-1])
+
         if lines[i].startswith('+++ '):
-            filename = strip_phony_filename_prefixes(lines[i].split(' ', 1)[1])
-            if filename != '/dev/null':
-                diff.filename = filename
             break
+
         i += 1
     diff.head_lines = u'\n'.join(head)
     diff.body_lines = u'\n'.join(line.rstrip() for line in lines[i + 1:])

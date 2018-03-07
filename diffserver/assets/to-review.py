@@ -59,6 +59,15 @@ def die(post_death_note):
 
 
 def find_config():
+    env_path = os.environ.get('DIFFCONFIG')
+    if env_path:
+        if os.path.isfile(env_path):
+            config = ConfigParser()
+            config.read([env_path])
+            return config
+        else:
+            die('Error: path to config DIFFCONFIG is invalid')
+
     thisdir = os.path.abspath('.')
     while thisdir != '/':
         config_path = os.path.join(thisdir, CONFIG_FILE_NAME)
@@ -188,6 +197,7 @@ def send_diff_to_server(title, diff):
         print('HTTP Error code: ', code)
         if code == 400:
             print(err.read())
+
 
 if __name__ == '__main__':
     parser = OptionParser(usage=__doc__)
