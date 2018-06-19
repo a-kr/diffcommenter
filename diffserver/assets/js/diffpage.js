@@ -218,7 +218,6 @@ function init_diffpage(opts) {
         var comment_id = comment.data('pk'),
             comment_text = $('textarea', comment).val(),
             status_span = $('.save-status', comment);
-        comment.data('save-timeout', null);
         status_span.text('♨');
 
         $.ajax({
@@ -240,21 +239,12 @@ function init_diffpage(opts) {
     };
 
     /* автосохранение по изменениям, с задержкой */
-    $('.comment textarea').live('keyup', function (ev) {
+    $('.comment textarea').live('blur', function (ev) {
         var self = $(this),
-            comment = self.closest('.comment'),
-            timeout_id,
-            old_timeout_id = comment.data('save-timeout');
+            comment = self.closest('.comment');
 
         $('.save-status', comment).text('*');
-
-        if (old_timeout_id) {
-            clearTimeout(old_timeout_id);
-        }
-        timeout_id = setTimeout(function () {
-            save_comment(comment);
-        }, opts['save_delay_ms']);
-        comment.data('save-timeout', timeout_id);
+        save_comment(comment);
     });
 
     /* удаление коммента */
