@@ -220,41 +220,33 @@ function init_diffpage(opts) {
             status_span = $('.save-status', comment);
         status_span.text('♨');
 
-        $.ajax({
-            'url': opts['save_comment_url'],
-            'type': 'POST',
-            'data': {
-                'comment_id': comment_id,
-                'text': comment_text,
-                'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']", comment).val()
-            },
-            'complete': function (response, statusCode) {
-                if (statusCode == 'error') {
-                    status_span.text('Save error');
-                } else {
-                    status_span.text('');
-                }
-            }
-        });
+        if (comment_text) {
+          $.ajax({
+              'url': opts['save_comment_url'],
+              'type': 'POST',
+              'data': {
+                  'comment_id': comment_id,
+                  'text': comment_text,
+                  'csrfmiddlewaretoken': $("input[name='csrfmiddlewaretoken']", comment).val()
+              },
+              'complete': function (response, statusCode) {
+                  if (statusCode == 'error') {
+                      status_span.text('Save error');
+                  } else {
+                      status_span.text('');
+                  }
+              }
+          });
+        } else {
+          delete_comment(comment);
+        }
     };
 
-    /* автосохранение по изменениям, с задержкой */
-    $('.comment textarea').live('blur', function (ev) {
-        var self = $(this),
-            comment = self.closest('.comment');
-
-        $('.save-status', comment).text('*');
-        save_comment(comment);
-    });
-
     /* удаление коммента */
-    $('.comment .del-comment a').live('click', function(ev) {
-        var self = $(this),
-            comment = self.closest('.comment'),
-            comment_id = comment.data('pk'),
+    function delete_comment(comment) {
+        var comment_id = comment.data('pk'),
             status_span = $('.save-status', comment);
         status_span.text('Deleting...');
-        ev.preventDefault();
         $.ajax({
             'url': opts['del_comment_url'],
             'type': 'POST',
@@ -270,7 +262,23 @@ function init_diffpage(opts) {
                 }
             }
         });
-        return false;
+    };
+
+    /* автосохранение по изменениям */
+    $('.comment textarea').live('blur', function (ev) {
+        var self = $(this),
+            comment = self.closest('.comment');
+
+        $('.save-status', comment).text('*');
+        save_comment(comment);
+    });
+
+    /* удаление коммента по нажатию на кнопку */
+    $('.comment .del-comment a').live('click', function(ev) {
+        var self = $(this),
+            comment = self.closest('.comment');
+        ev.preventDefault();
+        delete_comment(comment);
     });
 
     /* ответ на коммент (просто добавить новый коммент, ссылающийся на те же строки */
