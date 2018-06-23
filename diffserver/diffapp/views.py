@@ -161,7 +161,7 @@ def show_commit_sequence(request, object_id):
     def commit_to_html(self):
         print >>outfile, '<hr>'
         heading = self.oneline_summary
-        print >>outfile, '<h3 class="commit"><span>', heading, '</span>'
+        print >>outfile, '<h3 class="commit"><span>', heading.replace('<', '&lt;'), '</span>'
         anchor = self.make_anchor()
         print >>outfile, u'<a class="anchor-thingy jumps-to-anchor commit-anchor" id="{anchor}" href="#{anchor}">¶</a>'.format(**locals()), '</h3>'
         print >>outfile, '<pre>' + '\n'.join(self.head).replace('<', '&lt;') + '</pre>'
