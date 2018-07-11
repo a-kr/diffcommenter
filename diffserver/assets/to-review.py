@@ -203,6 +203,7 @@ if __name__ == '__main__':
     parser = OptionParser(usage=__doc__)
 
     parser.add_option("--branch", "-b", dest="branch", default=None, help=u"use this branch instead of HEAD")
+    parser.add_option("--base", dest="base", default='origin/master', help=u"use this branch instead of master")
     parser.add_option("--only", "--commit", "-o", "-c", dest="only_commit", default=None, help=u"send only specified commit to review")
     parser.add_option("--diff", "-d", dest="single_diff", default=None, action="store_true", help=u"collapse all commits in range into a single diff")
     parser.add_option("--file", "-f", dest="review_files", default=None, action="append", help=u"review an entire single file instead of a git diff")
@@ -219,11 +220,8 @@ if __name__ == '__main__':
         branch = options.branch or get_current_branch_name()
         head = options.branch or 'HEAD'
 
-        base_branch = 'origin/master'
-        # TODO считать оверрайд из argparse
-
         diff = read_diff(
-            base_branch=base_branch,
+            base_branch=options.base,
             only_commit=options.only_commit,
             from_commit=from_commit,
             single_diff=options.single_diff,
