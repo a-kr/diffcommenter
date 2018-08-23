@@ -20,6 +20,7 @@
             'del_comment_url': "{% url 'ajax_del_comment' commit_sequence.pk %}",
             'export_comments_url': "{% url 'export_comments' commit_sequence.pk %}"
         });
+        $(document).delegate('textarea', 'keydown', tab2spaces);
     });
 </script>
 
