@@ -331,11 +331,12 @@ function init_diffpage(opts) {
     });
 
     /* экспорт комментов */
-    $('#export_comments_btn').click(function (ev) {
+    $('.export_comments_btn').click(function (ev) {
+	var dialect = $(ev.currentTarget).data('dialect');
         var textarea = $('#exported_comments');
         textarea.val('Loading...');
         $.ajax({
-            'url': opts['export_comments_url'],
+            'url': opts['export_comments_url'] + '?dialect=' + dialect,
             'complete': function (response, statusText) {
                 if (statusText == 'error') {
                     textarea.val('Export error. ' + response.responseText);

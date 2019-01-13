@@ -279,11 +279,28 @@ def ajax_del_comment(request, commit_sequence_id):
     return HttpResponse('OK')
 
 
-def export_comments_redmine(request, commit_sequence_id):
+def export_comments(request, commit_sequence_id):
     """ Экспорт комментов для помещения в Redmine """
     sequence = get_object_or_404(CommitSequence, pk=commit_sequence_id)
     comments = LineComment.objects.filter(diff__commit__commit_sequence__pk=commit_sequence_id)\
             .select_related('diff', 'diff__commit').order_by('first_line_anchor', 'added')
+    dialect_name = request.GET.get('dialect') or 'redmine'
+    if dialect_name not in ('jira', 'redmine'):
+        dialect_name = 'redmine'
+    if dialect_name == 'redmine':
+        dialect = {
+            'italic': u'_{}_',
+            'bold': u'**{}**',
+            'codeblock': u'<pre>\n{}</pre>\n',
+        }
+    elif dialect_name == 'jira':
+        dialect = {
+            'italic': u'_{}_',
+            'bold': u'*{}*',
+            'codeblock': u'{{code:python}}\n{}{{code}}\n',
+        }
+    else:
+        raise Exception('Unknown dialect')
 
     exported = StringIO()
     url = settings.ROOT_URL + sequence.get_edit_url()
@@ -330,16 +347,12 @@ def export_comments_redmine(request, commit_sequence_id):
             ) for line in lines
         ]
 
-        commented_chunk_title = u'**%s** @ %s' % (comment.diff.filename, around_line_no)
-        print >>exported, '_' + comment.diff.commit.short_hash + '_', commented_chunk_title
+        commented_chunk_title = u'%s @ %s' % (dialect['bold'].format(comment.diff.filename), around_line_no)
+        print >>exported, dialect['italic'].format(comment.diff.commit.short_hash), commented_chunk_title
         print >>exported, ''
-        print >>exported, '<pre>'
-        for line in rendered_lines:
-            print >>exported, line
-        print >>exported, '</pre>'
+        print >>exported, dialect['codeblock'].format(u'\n'.join(rendered_lines) + u'\n')
         for line in comment.text.split('\n'):
-            shifted_line = ('    ' + line).rstrip()
-            print >>exported, shifted_line
+            print >>exported, line.rstrip()
         print >>exported, ''
         print >>exported, ''
 
